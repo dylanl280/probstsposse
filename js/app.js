@@ -249,8 +249,15 @@
       const f3 = [w, ...others].map((c) => castawayBlock(c, {
         meta: c.id === w.id ? "★ Winner pick" : "",
       })).join("");
+      const egg = r.player.easterEgg
+        ? `<figure class="easter-egg" aria-hidden="true">
+             <img src="${esc(r.player.easterEgg)}" alt="" loading="lazy" width="600" height="800">
+             <figcaption>${esc(r.player.name)}</figcaption>
+           </figure>`
+        : "";
       return `
-        <article class="card player-card">
+        <article class="card player-card${egg ? " has-egg" : ""}">
+          ${egg}
           <div class="player-card__head">
             <h3 class="player-card__name">${esc(r.player.name)}</h3>
             <span class="player-card__rank">${r.champion && over ? "🏆 Champion" : `${r.tied ? "Tied " : ""}${ordinal(r.rank)} place`}</span>
@@ -389,6 +396,16 @@
   }
 
   // ---------- interactions ----------
+  // Easter eggs: hover shows them on desktop (CSS); on touch screens a tap toggles them
+  document.addEventListener("click", (e) => {
+    if (matchMedia("(hover: hover)").matches) return;
+    const card = e.target.closest(".player-card.has-egg");
+    document.querySelectorAll(".player-card.egg-open").forEach((c) => {
+      if (c !== card) c.classList.remove("egg-open");
+    });
+    if (card) card.classList.toggle("egg-open");
+  });
+
   $("cast-filters").addEventListener("click", (e) => {
     const btn = e.target.closest("[data-filter]");
     if (!btn) return;

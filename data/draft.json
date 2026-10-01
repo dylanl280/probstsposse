@@ -13,6 +13,6 @@
     { "name": "Allie Salvucci", "winner": "patt", "finalThree": ["patt", "kristin", "rob"] },
     { "name": "Kiah", "winner": "mike", "finalThree": ["mike", "linnea", "devin"] },
     { "name": "Melissa", "winner": "jenna", "finalThree": ["jenna", "kristin", "alexis"] },
-    { "name": "Allie Scott", "winner": "lewis", "finalThree": ["lewis", "ori", "alexis"] }
+    { "name": "Allie Scott", "winner": "lewis", "finalThree": ["lewis", "ori", "alexis"], "easterEgg": "images/easter/allie-scott.jpg" }
   ]
 }

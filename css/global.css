@@ -742,6 +742,72 @@ h4 {
   color: var(--text-muted);
 }
 
+/* Easter egg: a polaroid that pops up over a player's card */
+.player-card.has-egg {
+  position: relative;
+  overflow: visible;
+}
+
+.player-card.has-egg .player-card__foot {
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.player-card.has-egg .player-card__head {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.easter-egg {
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  width: min(78%, 260px);
+  margin: 0;
+  padding: 10px 10px 0;
+  background: #fffdf7;
+  border-radius: 4px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -46%) rotate(-4deg) scale(0.6);
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0s linear 0.3s;
+}
+
+.easter-egg img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.easter-egg figcaption {
+  padding: 8px 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #13202e;
+}
+
+@media (hover: hover) {
+  .player-card.has-egg:hover .easter-egg {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) rotate(-4deg) scale(1);
+    transition-delay: 0s;
+  }
+}
+
+.player-card.egg-open .easter-egg {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) rotate(-4deg) scale(1);
+  transition-delay: 0s;
+}
+
 /* ---------- Tribes ---------- */
 .tribes {
   display: grid;
@@ -1019,6 +1085,7 @@ h4 {
   html { scroll-behavior: auto; }
   .skeleton,
   .torch__flame { animation: none; }
+  .easter-egg { transition: none; }
 }
 
 /* Compact status pills inside tight photo grids */
