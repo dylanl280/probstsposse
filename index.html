@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Probst's Posse · Survivor 51 Draft</title>
+  <meta name="description" content="Live tracker for the Probst's Posse Survivor 51 draft: picks, standings, tribes and boot order.">
+  <meta name="theme-color" content="#0f2a44">
+  <meta property="og:title" content="Probst's Posse · Survivor 51 Draft">
+  <meta property="og:description" content="Who's still in the game? Live standings for our Survivor 51 draft.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero__inner">
+      <div>
+        <div class="hero__eyebrow">Survivor 51 · Mamanuca Islands, Fiji</div>
+        <h1 class="hero__title">Probst's <span>Posse</span></h1>
+        <p class="hero__subtitle">Eight players, eight winner picks, one Sole Survivor. Live standings for our Survivor 51 draft, updated after every Tribal Council.</p>
+      </div>
+      <div class="hero__stats" id="hero-stats" aria-live="polite"></div>
+    </div>
+  </header>
+  <div class="buff-stripe" aria-hidden="true"></div>
+
+  <nav class="nav" aria-label="Sections">
+    <div class="container nav__inner">
+      <a class="nav__brand" href="#top">Probst's <span>Posse</span></a>
+      <a class="nav__link" href="#standings">Standings</a>
+      <a class="nav__link" href="#draft">Draft Board</a>
+      <a class="nav__link" href="#tribes">Tribes</a>
+      <a class="nav__link" href="#boot-order">Boot Order</a>
+      <a class="nav__link" href="#cast">Cast</a>
+      <a class="nav__link" href="#rules">Rules</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
+    </div>
+  </nav>
+
+  <main id="top">
+    <div id="error"></div>
+
+    <section class="section" id="standings">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            <h2 class="section__title">Standings</h2>
+            <p class="section__lede" id="standings-lede">Ranked by picks still in the game, then by whose winner pick has lasted longest.</p>
+          </div>
+        </div>
+        <div class="card standings" id="standings-table"><div class="skeleton"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="draft">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            <h2 class="section__title">Draft Board</h2>
+            <p class="section__lede">Every player's winner pick and final three, with live castaway status.</p>
+          </div>
+        </div>
+        <div class="draft-grid" id="draft-grid"><div class="skeleton"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="tribes">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            <h2 class="section__title">Tribes</h2>
+            <p class="section__lede">Current tribe lineups. Castaways who have left the game are shown in grey.</p>
+          </div>
+        </div>
+        <div class="tribes" id="tribes-grid"><div class="skeleton"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="boot-order">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            <h2 class="section__title">Boot Order</h2>
+            <p class="section__lede">Everyone whose torch has been snuffed, in order.</p>
+          </div>
+        </div>
+        <ol class="boot-list" id="boot-list"></ol>
+      </div>
+    </section>
+
+    <section class="section" id="cast">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            <h2 class="section__title">The Cast</h2>
+            <p class="section__lede">All 21 castaways of Survivor 51.</p>
+          </div>
+          <div class="filters" id="cast-filters" role="group" aria-label="Filter castaways"></div>
+        </div>
+        <div class="cast-grid" id="cast-grid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="rules">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            <h2 class="section__title">Rules</h2>
+            <p class="section__lede">Everyone picked a final three and a winner. Final threes can overlap, but every winner pick is different.</p>
+          </div>
+        </div>
+        <div class="rules">
+          <article class="card rule">
+            <div class="rule__icon" aria-hidden="true">🏆</div>
+            <h3>Champion</h3>
+            <p>If your winner pick wins the season, you win the draft.</p>
+          </article>
+          <article class="card rule">
+            <div class="rule__icon" aria-hidden="true">🔥</div>
+            <h3>Points</h3>
+            <p>1 point for each of your three picks who makes the final three. Points decide 2nd place and below.</p>
+          </article>
+          <article class="card rule">
+            <div class="rule__icon" aria-hidden="true">⚖️</div>
+            <h3>Tiebreaker</h3>
+            <p>Tied on points? Whoever's winner pick lasted longer in the game ranks higher.</p>
+          </article>
+          <article class="card rule">
+            <div class="rule__icon" aria-hidden="true">🗳️</div>
+            <h3>No one picked the winner?</h3>
+            <p>Most points becomes champion, using the same tiebreaker.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>Probst's Posse · A fan-made draft tracker. Not affiliated with CBS or Survivor.</span>
+      <span id="footer-updated">Statuses sync automatically from <a href="https://en.wikipedia.org/wiki/Survivor_51" rel="noopener">Wikipedia</a>.</span>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

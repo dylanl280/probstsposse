@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "champion": "If your winner pick wins the season, you win the draft.",
+    "points": "1 point for each of your three picks who makes the final three.",
+    "tiebreaker": "Whoever's winner pick lasted longer in the game.",
+    "noChampion": "If nobody picked the winner, the most points wins (same tiebreaker)."
+  },
+  "players": [
+    { "name": "Dylan", "winner": "kristin", "finalThree": ["kristin", "lewis", "kilby"] },
+    { "name": "Ellie", "winner": "rob", "finalThree": ["rob", "kristin", "kilby"] },
+    { "name": "Jude", "winner": "alexis", "finalThree": ["alexis", "kristin", "devin"] },
+    { "name": "Surya", "winner": "carter", "finalThree": ["carter", "kristin", "jenna"] },
+    { "name": "Allie Salvucci", "winner": "patt", "finalThree": ["patt", "kristin", "rob"] },
+    { "name": "Kiah", "winner": "mike", "finalThree": ["mike", "linnea", "devin"] },
+    { "name": "Melissa", "winner": "jenna", "finalThree": ["jenna", "kristin", "alexis"] },
+    { "name": "Allie Scott", "winner": "lewis", "finalThree": ["lewis", "ori", "alexis"] }
+  ]
+}
