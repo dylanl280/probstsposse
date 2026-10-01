@@ -106,12 +106,26 @@
       </div>`;
   }
 
+  /** Tiki torch: flame on top when lit, a wisp of smoke when snuffed. */
+  function torchSvg(lit) {
+    const top = lit
+      ? `<g class="torch__flame">
+           <path class="torch__flame-outer" d="M10 1C13.8 5.6 15.6 8.6 15.1 11.6C14.6 14.4 12.6 15.8 10 15.8S5.4 14.4 4.9 11.6C4.5 9 6.6 7.2 7.6 4.6C8.3 6.4 9.2 7 9.8 7.3C10.4 5.4 10.3 3.2 10 1Z"/>
+           <path class="torch__flame-inner" d="M10 7.6C11.8 9.8 12.7 11.2 12.4 12.8C12.1 14.2 11.2 14.9 10 14.9S7.9 14.2 7.6 12.8C7.3 11.2 8.6 9.8 10 7.6Z"/>
+         </g>`
+      : `<path class="torch__smoke" d="M10 14.5C8.2 12.4 11.8 10.6 10 8.2C8.6 6.4 11.2 4.6 10.2 2.2"/>`;
+    return `<svg class="torch${lit ? "" : " is-snuffed"}" viewBox="0 0 20 44" aria-hidden="true">
+      ${top}
+      <path class="torch__head" d="M4.2 15.4H15.8L13.8 23.6H6.2Z"/>
+      <path class="torch__wrap" d="M4.9 18.2H15.1M5.6 21H14.4M7.4 15.6L9 23.4M12.6 15.6L11 23.4"/>
+      <path class="torch__pole" d="M8.6 23.4H11.4L10.8 43.4H9.2Z"/>
+    </svg>`;
+  }
+
   function torches(alive) {
-    let html = `<span class="torches" aria-label="${alive} of 3 picks still in">`;
-    for (let i = 0; i < 3; i++) {
-      html += `<span class="torch${i < alive ? "" : " is-snuffed"}"></span>`;
-    }
-    return html + `<span class="torches__label">${alive}/3</span></span>`;
+    let html = `<span class="torches" role="img" aria-label="${alive} of 3 picks still in">`;
+    for (let i = 0; i < 3; i++) html += torchSvg(i < alive);
+    return html + `<span class="torches__label" aria-hidden="true">${alive}/3</span></span>`;
   }
 
   // ---------- scoring ----------
