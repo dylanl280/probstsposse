@@ -5,6 +5,7 @@
   "use strict";
 
   const REFRESH_MS = 5 * 60 * 1000;
+  const RUNS_API = "https://api.github.com/repos/dylanl280/probstsposse/actions/workflows/site.yml/runs";
 
   const STATUS = {
     active: { label: "Still in the game", tone: "active", out: false },
@@ -185,17 +186,24 @@
     const cast = state.cast.castaways;
     const remaining = cast.filter((c) => !statusOf(c).out).length;
     const activeTribes = new Set(cast.filter((c) => !statusOf(c).out).map((c) => c.tribe)).size;
-    const updated = state.cast.lastUpdated
-      ? new Date(state.cast.lastUpdated).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
-      : "—";
+    // Fall back to the last data change if GitHub's API is unreachable
+    const checked = state.lastChecked || state.cast.lastUpdated;
     const stats = [
       [state.cast.episodesAired, "Episodes aired"],
       [`${remaining}<small style="font-size:.55em;opacity:.7"> / ${cast.length}</small>`, "Castaways left"],
       [activeTribes, activeTribes === 1 ? "Tribe (merged)" : "Tribes"],
-      [esc(updated), "Last update"],
+      [esc(formatTime(checked)), "Last checked"],
     ];
     $("hero-stats").innerHTML = stats.map(([v, l]) =>
       `<div class="stat"><div class="stat__value">${v}</div><div class="stat__label">${l}</div></div>`).join("");
+    $("footer-updated").innerHTML = `Statuses sync automatically from <a href="https://en.wikipedia.org/wiki/Survivor_51" rel="noopener">Wikipedia</a>`
+      + (state.cast.lastUpdated ? ` · last change ${esc(formatTime(state.cast.lastUpdated))}` : "") + ".";
+  }
+
+  function formatTime(iso) {
+    return iso
+      ? new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+      : "—";
   }
 
   function renderStandings(rows) {
@@ -378,13 +386,31 @@
     return res.json();
   }
 
+  /** Time of the latest successful Wikipedia sync run, from GitHub's public API. */
+  async function fetchLastChecked() {
+    try {
+      const res = await fetch(`${RUNS_API}?status=success&per_page=20`, { cache: "no-store" });
+      if (!res.ok) return null;
+      const { workflow_runs: runs = [] } = await res.json();
+      const sync = runs.find((r) => r.event === "schedule" || r.event === "workflow_dispatch");
+      return sync ? sync.updated_at : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async function load() {
     try {
-      const [cast, draft] = await Promise.all([fetchJson("data/castaways.json"), fetchJson("data/draft.json")]);
+      const [cast, draft, lastChecked] = await Promise.all([
+        fetchJson("data/castaways.json"), fetchJson("data/draft.json"), fetchLastChecked(),
+      ]);
       const changed = cast.lastUpdated !== state.lastUpdated || !state.draft;
+      const checkedChanged = lastChecked && lastChecked !== state.lastChecked;
       state.cast = cast;
       state.draft = draft;
       state.lastUpdated = cast.lastUpdated;
+      if (lastChecked) state.lastChecked = lastChecked;
+      if (!changed && checkedChanged) renderHero();
       $("error").innerHTML = "";
       if (changed) renderAll();
     } catch (err) {
