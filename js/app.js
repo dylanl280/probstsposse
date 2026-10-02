@@ -72,6 +72,11 @@
     return `<span class="status status--${s.tone}">${esc(s.label)}</span>`;
   }
 
+  function spokenLine(c) {
+    return statusOf(c).spoken
+      ? `<div class="castaway__spoken">${torchSvg(false)}<span>The tribe has spoken.</span></div>` : "";
+  }
+
   function outDetail(c) {
     if (!statusOf(c).out) return "";
     const bits = [];
@@ -101,7 +106,7 @@
         ${photo}
         <div class="castaway__name">${esc(c.shortName)}</div>
         ${statusPill(c)}
-        ${s.spoken ? `<div class="castaway__spoken">The tribe has spoken.</div>` : ""}
+        ${spokenLine(c)}
         ${showTribe ? tribeTag(c.tribe) : ""}
         ${meta ? `<div class="castaway__meta">${meta}</div>` : ""}
       </div>`;
@@ -278,7 +283,7 @@
                 <div class="winner-pick__info">
                   <div class="winner-pick__name">${esc(w.shortName)}</div>
                   ${statusPill(w)}
-                  ${statusOf(w).spoken ? `<div class="castaway__spoken">The tribe has spoken.</div>` : ""}
+                  ${spokenLine(w)}
                   ${tribeTag(w.tribe)}
                   <div class="castaway__meta">${esc(w.occupation)} · ${esc(w.hometown)}</div>
                   ${wOut ? `<div class="castaway__meta">${esc(w.finish || statusOf(w).label)}${outDetail(w) ? " · " + esc(outDetail(w)) : ""}</div>` : ""}

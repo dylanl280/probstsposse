@@ -451,10 +451,21 @@ h4 {
 }
 
 .castaway__spoken {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.25;
   font-size: 0.78rem;
   font-weight: 700;
   font-style: italic;
   color: var(--status-out);
+}
+
+/* Same grey snuffed torch as the standings, sized up */
+.castaway__spoken .torch {
+  width: 16px;
+  height: 35px;
 }
 
 /* Eliminated castaways: snuffed torch treatment */
