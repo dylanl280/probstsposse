@@ -4,7 +4,7 @@
   "location": "Mamanuca Islands, Fiji",
   "premiere": "2026-09-23",
   "episodesAired": 3,
-  "lastUpdated": "2026-10-08T01:38:28+00:00",
+  "lastUpdated": "2026-10-08T05:57:11+00:00",
   "source": "https://en.wikipedia.org/wiki/Survivor_51",
   "tribes": {
     "savu": {
@@ -16,6 +16,11 @@
       "name": "Toka",
       "color": "yellow",
       "meaning": "From “tavutoka,” the three-spotted crab"
+    },
+    "dina": {
+      "name": "Dina",
+      "color": null,
+      "meaning": null
     }
   },
   "castaways": [
@@ -101,7 +106,7 @@
       "photo": "images/castaways/jelly.jpg",
       "wikiLastName": "Loblack",
       "originalTribe": "toka",
-      "tribe": "toka",
+      "tribe": "savu",
       "status": "active",
       "finish": null,
       "day": null,
@@ -173,7 +178,7 @@
       "photo": "images/castaways/kilby.jpg",
       "wikiLastName": "Kilby",
       "originalTribe": "toka",
-      "tribe": "toka",
+      "tribe": "dina",
       "status": "active",
       "finish": null,
       "day": null,
@@ -209,7 +214,7 @@
       "photo": "images/castaways/eric.jpg",
       "wikiLastName": "Macksoud",
       "originalTribe": "savu",
-      "tribe": "savu",
+      "tribe": "dina",
       "status": "active",
       "finish": null,
       "day": null,
