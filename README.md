@@ -19,14 +19,15 @@ A static site (no build step, no database) that tracks our Survivor 51 draft.
 
 ## Keeping statuses current
 
-GitHub starts scheduled workflows late, often by hours, and skips many of them.
+GitHub starts scheduled workflows late, often by hours, and skips most of them.
 So the schedule is only a set of chances to start, and `scripts/sync.sh` does the timing:
 
 - **Most of the week** an hourly run checks Wikipedia once and exits.
-- **Episode night** (Wednesday 20:00 UTC to Thursday 06:00 UTC, which is 3pm to 1am Eastern
-  in winter) the first run to start becomes a *watcher*. It stays alive and re-checks
-  Wikipedia every 5 minutes until the window closes, handing over to a fresh run before
-  GitHub's 6-hour job limit. Only one watcher runs at a time.
+- **On Wednesdays** the first run to start (any time from 00:00 UTC, which is 7pm Eastern
+  on Tuesday in winter) becomes a *watcher*. It stays alive and re-checks Wikipedia every
+  5 minutes until Thursday 06:00 UTC (1am Eastern), handing over to a fresh run before
+  GitHub's 6-hour job limit. Only one watcher runs at a time. Starting that early means a
+  single scheduled run on Wednesday is enough to cover the episode.
 
 When a check finds a change it commits `data/castaways.json` and requests a deploy.
 Open pages refresh their data every 5 minutes, or every minute while the watcher is
@@ -41,7 +42,7 @@ Statuses: `active`, `voted_out`, `jury`, `medevac`, `quit`, `finalist`, `winner`
 
 To force a sync now: **Actions → Sync statuses & deploy → Run workflow**, and pick a mode:
 
-- `auto` (default): check once now, or become the watcher if it is episode night.
+- `auto` (default): check once now, or become the watcher if it is Wednesday (UTC).
 - `watch`: keep checking every 5 minutes for the number of minutes you enter. Use it for
   a finale or a special that airs on another night.
 - `deploy`: redeploy the site without checking Wikipedia.

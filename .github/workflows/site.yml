@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "auto: sync once, or keep watching on episode night · watch: keep checking · deploy: just redeploy"
+        description: "auto: sync once, or keep watching if it's Wednesday (UTC) · watch: keep checking · deploy: just redeploy"
         type: choice
         options: [auto, watch, deploy]
         default: auto
@@ -14,13 +14,14 @@ on:
         description: "watch mode only: how many minutes to keep checking"
         default: "180"
   schedule:
-    # GitHub starts scheduled runs late (often by hours) and skips many of them, so these
-    # are only chances to start. The precise timing lives in scripts/sync.sh: a run that
-    # starts on episode night stays alive and re-checks Wikipedia every 5 minutes.
+    # GitHub starts scheduled runs late (often by hours) and skips most of them, so these
+    # are only chances to start. The timing lives in scripts/sync.sh: the first run to
+    # start on Wednesday stays alive and re-checks Wikipedia every 5 minutes until
+    # Thursday 06:00, so a single scheduled run that day is enough to cover the episode.
     # Times are UTC. Odd minutes on purpose: the top of the hour is the busiest slot.
     - cron: "23 * * * *"            # baseline: hourly, all week
-    - cron: "8,38,53 20-23 * * 3"   # Wednesday 3pm ET onward: extra chances to start the watcher
-    - cron: "8,38,53 0-5 * * 4"     # ...through 1am ET (episodes air Wednesdays at 8pm ET)
+    - cron: "8,38,53 * * * 3"       # all of Wednesday: extra chances to start the watcher
+    - cron: "8,38,53 0-5 * * 4"     # ...through 1am ET Thursday (episodes air Wednesdays at 8pm ET)
 
 permissions:
   contents: write
