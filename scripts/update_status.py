@@ -148,7 +148,9 @@ def parse_episodes(wikitext):
     episodes = []
     for block in re.findall(r"\{\{#invoke:Episode list\|sublist(.*?)\n\}\}", wikitext, re.S):
         num = re.search(r"EpisodeNumber2\s*=\s*(\d+)", block)
-        days = re.search(r"Aux1\s*=\s*Days?\s*(\d+)(?:\s*[–-]\s*(\d+))?", block)
+        aux1 = re.search(r"Aux1\s*=\s*([^\n]*)", block)
+        # Strip wrappers like {{nowrap|Days 12–14}} before matching
+        days = aux1 and re.match(r"Days?\s*(\d+)(?:\s*[–-]\s*(\d+))?", plain_text(aux1.group(1)))
         if num and days:
             first = int(days.group(1))
             episodes.append((int(num.group(1)), first, int(days.group(2) or first)))

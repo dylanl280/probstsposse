@@ -21,6 +21,7 @@
     yellow: { color: "var(--toka-yellow)", ink: "#1d1a0a" },
     purple: { color: "var(--savu-purple)", ink: "#fff" },
     pink: { color: "var(--dina-pink)", ink: "#fff" },
+    blue: { color: "var(--tovuto-blue)", ink: "#fff" },
   };
 
   let state = { cast: null, draft: null, castFilter: "all", lastUpdated: undefined };
