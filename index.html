@@ -9,6 +9,17 @@
   <meta property="og:title" content="Probst's Posse · Survivor 51 Draft">
   <meta property="og:description" content="Who's still in the game? Live standings for our Survivor 51 draft.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <script>
+    // Apply the saved theme before first paint, and switch on entrance
+    // animations only when motion is welcome and the motion script can drive them
+    (function (root) {
+      try { var t = localStorage.getItem("theme"); if (t) root.dataset.theme = t; } catch (e) {}
+      if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      root.classList.add("fx");
+      // Never leave content hidden if fx.js fails to load
+      setTimeout(function () { if (!window.PosseFX) root.classList.remove("fx"); }, 4000);
+    })(document.documentElement);
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap">
@@ -16,10 +27,22 @@
 </head>
 <body>
   <header class="hero">
+    <canvas class="hero__embers" id="embers" aria-hidden="true"></canvas>
+    <div class="hero__torch" aria-hidden="true">
+      <svg viewBox="0 0 120 320" focusable="false">
+        <path class="hero__flame hero__flame--outer" d="M60 8 C78 40 98 62 96 92 C94 116 80 132 60 132 C40 132 26 116 24 92 C22 72 36 60 42 40 C46 52 52 58 56 60 C60 44 62 26 60 8 Z"/>
+        <path class="hero__flame hero__flame--mid" d="M60 44 C72 64 84 78 82 98 C80 116 72 126 60 126 C48 126 40 116 38 98 C37 84 46 76 50 64 C53 72 56 75 58 76 C60 66 61 54 60 44 Z"/>
+        <path class="hero__flame hero__flame--inner" d="M60 76 C68 88 73 96 72 107 C71 117 66 122 60 122 C54 122 49 117 48 107 C47 97 53 88 60 76 Z"/>
+        <path class="hero__torch-pole" d="M53 178H67L65 320H55Z"/>
+        <path class="hero__torch-head" d="M30 128H90L80 172H40Z"/>
+        <path class="hero__torch-wrap" d="M33 140H87M36.5 155H83.5M46 129L52 171M74 129L68 171M60 129V171"/>
+        <path class="hero__torch-band" d="M38 170H82V178H38Z"/>
+      </svg>
+    </div>
     <div class="container hero__inner">
       <div>
         <div class="hero__eyebrow">Survivor 51 · Mamanuca Islands, Fiji</div>
-        <h1 class="hero__title">Probst's <span>Posse</span></h1>
+        <h1 class="hero__title"><span class="hero__word">Probst's</span> <span class="hero__word hero__word--fire">Posse</span></h1>
         <p class="hero__subtitle">Eight players, eight winner picks, one Sole Survivor. Live standings for our Survivor 51 draft, updated after every Tribal Council.</p>
       </div>
       <div class="hero__stats" id="hero-stats" aria-live="polite"></div>
@@ -38,6 +61,7 @@
       <a class="nav__link" href="#rules">Rules</a>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
     </div>
+    <div class="nav__progress" id="nav-progress" aria-hidden="true"></div>
   </nav>
 
   <main id="top">
@@ -45,19 +69,19 @@
 
     <section class="section" id="standings">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header reveal">
           <div>
             <h2 class="section__title">Standings</h2>
             <p class="section__lede" id="standings-lede">Ranked by picks still in the game, then by whose winner pick has lasted longest.</p>
           </div>
         </div>
-        <div class="card standings" id="standings-table"><div class="skeleton"></div></div>
+        <div class="card standings reveal" id="standings-table"><div class="skeleton"></div></div>
       </div>
     </section>
 
     <section class="section" id="draft">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header reveal">
           <div>
             <h2 class="section__title">Draft Board</h2>
             <p class="section__lede">Every player's winner pick and final three, with live castaway status.</p>
@@ -69,7 +93,7 @@
 
     <section class="section" id="tribes">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header reveal">
           <div>
             <h2 class="section__title">Tribes</h2>
             <p class="section__lede">Current tribe lineups. Castaways who have left the game are shown in grey.</p>
@@ -81,7 +105,7 @@
 
     <section class="section" id="boot-order">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header reveal">
           <div>
             <h2 class="section__title">Boot Order</h2>
             <p class="section__lede">Everyone whose torch has been snuffed, in order.</p>
@@ -93,7 +117,7 @@
 
     <section class="section" id="cast">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header reveal">
           <div>
             <h2 class="section__title">The Cast</h2>
             <p class="section__lede">All 21 castaways of Survivor 51.</p>
@@ -106,29 +130,29 @@
 
     <section class="section" id="rules">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header reveal">
           <div>
             <h2 class="section__title">Rules</h2>
             <p class="section__lede">Everyone picked a final three and a winner. Final threes can overlap, but every winner pick is different.</p>
           </div>
         </div>
         <div class="rules">
-          <article class="card rule">
+          <article class="card rule reveal">
             <div class="rule__icon" aria-hidden="true">🏆</div>
             <h3>Champion</h3>
             <p>If your winner pick wins the season, you win the draft.</p>
           </article>
-          <article class="card rule">
+          <article class="card rule reveal">
             <div class="rule__icon" aria-hidden="true">🔥</div>
             <h3>Points</h3>
             <p>1 point for each of your three picks who makes the final three. Points decide 2nd place and below.</p>
           </article>
-          <article class="card rule">
+          <article class="card rule reveal">
             <div class="rule__icon" aria-hidden="true">⚖️</div>
             <h3>Tiebreaker</h3>
-            <p>Tied on points? Whoever's winner pick lasted longer in the game ranks higher.</p>
+            <p>Tied on points? Whoever's winner pick lasted longer ranks higher. At the finale, the runner-up beats the 2nd runner-up. If the jury ties those two, the better combined finish of all three picks decides it.</p>
           </article>
-          <article class="card rule">
+          <article class="card rule reveal">
             <div class="rule__icon" aria-hidden="true">🗳️</div>
             <h3>No one picked the winner?</h3>
             <p>Most points becomes champion, using the same tiebreaker.</p>
@@ -145,6 +169,7 @@
     </div>
   </footer>
 
+  <script src="js/fx.js?v=dev"></script>
   <script src="js/app.js?v=dev"></script>
 </body>
 </html>

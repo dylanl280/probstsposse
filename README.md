@@ -11,12 +11,26 @@ A static site (no build step, no database) that tracks our Survivor 51 draft.
 | `data/draft.json` | Each player's winner pick and final three |
 | `data/castaways.json` | Bios, photos, tribes and live status for all 21 castaways |
 | `js/app.js` | Calculates standings and renders the page |
+| `js/fx.js` | Animations. Optional: the page works without it, and it respects "reduce motion" |
 | `css/global.css` | Design tokens (buff colors) and all styles |
 | `scripts/update_status.py` | Pulls statuses from the Survivor 51 Wikipedia page |
-| `.github/workflows/site.yml` | Runs the sync on a schedule and deploys to GitHub Pages |
+| `scripts/sync.sh` | Decides how to run the scraper: once, or as the episode-night watcher |
+| `.github/workflows/site.yml` | Starts the sync on a schedule and deploys to GitHub Pages |
 
-The sync runs every 30 minutes on Wednesday nights after the episode, plus every 6 hours.
-If anything changed it commits `data/castaways.json` and redeploys. Open pages refresh their data every 5 minutes.
+## Keeping statuses current
+
+GitHub starts scheduled workflows late, often by hours, and skips many of them.
+So the schedule is only a set of chances to start, and `scripts/sync.sh` does the timing:
+
+- **Most of the week** an hourly run checks Wikipedia once and exits.
+- **Episode night** (Wednesday 20:00 UTC to Thursday 06:00 UTC, which is 3pm to 1am Eastern
+  in winter) the first run to start becomes a *watcher*. It stays alive and re-checks
+  Wikipedia every 5 minutes until the window closes, handing over to a fresh run before
+  GitHub's 6-hour job limit. Only one watcher runs at a time.
+
+When a check finds a change it commits `data/castaways.json` and requests a deploy.
+Open pages refresh their data every 5 minutes, or every minute while the watcher is
+running (the page header shows "Live").
 
 ## Fixing a status by hand
 
@@ -25,11 +39,17 @@ If Wikipedia is wrong (or slow), edit `data/castaways.json` on GitHub and set
 
 Statuses: `active`, `voted_out`, `jury`, `medevac`, `quit`, `finalist`, `winner`.
 
-To force a sync now: **Actions → Sync statuses & deploy → Run workflow**.
+To force a sync now: **Actions → Sync statuses & deploy → Run workflow**, and pick a mode:
+
+- `auto` (default): check once now, or become the watcher if it is episode night.
+- `watch`: keep checking every 5 minutes for the number of minutes you enter. Use it for
+  a finale or a special that airs on another night.
+- `deploy`: redeploy the site without checking Wikipedia.
 
 ## Scoring
 
 - Your winner pick wins the season → you win the draft.
 - 1 point for each of your three picks who makes the final three.
-- Tiebreaker: whoever's winner pick lasted longer.
+- Tiebreaker: whoever's winner pick lasted longer. At the finale the runner-up beats the 2nd runner-up (jury votes).
+- Still tied (the jury tied the two losing finalists): the better combined finish of all three picks.
 - Nobody picked the winner → most points is champion.

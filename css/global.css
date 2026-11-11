@@ -1,7 +1,7 @@
 /* ==========================================================================
    Probst's Posse — Survivor 51 Draft Tracker
    Global stylesheet. Palette is taken from the official Survivor 51 buffs:
-   Toka (yellow + sky blue) and Savu (purple + lime).
+   Toka (yellow + sky blue), Savu (purple + lime), Dina (pink) and Tovuto (blue).
    ========================================================================== */
 
 /* ---------- Design tokens ---------- */
@@ -158,12 +158,14 @@ h4 {
 /* ---------- Buff stripe (decorative band echoing the buff pattern) ---------- */
 .buff-stripe {
   height: 8px;
-  background: linear-gradient(
+  background: repeating-linear-gradient(
     90deg,
-    var(--toka-yellow) 0 25%,
-    var(--toka-sky) 25% 50%,
-    var(--savu-purple) 50% 75%,
-    var(--savu-lime) 75% 100%
+    var(--toka-yellow) 0 80px,
+    var(--toka-sky) 80px 160px,
+    var(--savu-purple) 160px 240px,
+    var(--savu-lime) 240px 320px,
+    var(--dina-pink) 320px 400px,
+    var(--tovuto-blue) 400px 480px
   );
 }
 
@@ -225,10 +227,6 @@ h4 {
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 0.95;
-}
-
-.hero__title span {
-  color: var(--toka-yellow);
 }
 
 .hero__subtitle {
@@ -1122,4 +1120,482 @@ h4 {
 .f3-grid .castaway__spoken,
 .tribe__body .castaway__spoken {
   font-size: 0.7rem;
+}
+
+/* ==========================================================================
+   Motion
+   Everything below is progressive: the page reads fine without it. Entrance
+   effects only apply under html.fx (set by an inline script in index.html when
+   motion is welcome), and the reduced-motion block at the end turns the rest off.
+   ========================================================================== */
+:root {
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+/* Slides a 200%-wide, seamlessly tiling gradient by exactly one tile */
+@keyframes molten {
+  to { background-position: 200% 0; }
+}
+
+/* ---------- Hero: heat glow, embers, torch ---------- */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(720px 340px at 84% 108%, rgba(232, 100, 44, 0.42), transparent 70%);
+  animation: heat 5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes heat {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+.hero__embers {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero__torch {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  right: max(var(--gutter), calc((100vw - var(--max-width)) / 2 + var(--gutter)));
+  bottom: -46px;
+  width: clamp(120px, 12vw, 164px);
+  pointer-events: none;
+}
+
+.hero__torch svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Soft light thrown by the flame */
+.hero__torch::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: 300%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgba(246, 198, 35, 0.34), rgba(232, 100, 44, 0.16) 45%, transparent 72%);
+  animation: glow 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { opacity: 0.65; scale: 0.94; }
+  to { opacity: 1; scale: 1.04; }
+}
+
+.hero__flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flame 2.3s ease-in-out infinite alternate;
+}
+
+.hero__flame--outer { fill: var(--torch-orange); }
+.hero__flame--mid { fill: #f6a023; animation-duration: 1.7s; animation-delay: -0.6s; }
+.hero__flame--inner { fill: #ffe27a; animation-duration: 1.3s; animation-delay: -0.2s; }
+
+@keyframes flame {
+  0% { transform: scale(1, 1) rotate(-1.6deg); }
+  25% { transform: scale(0.95, 1.07) rotate(1.4deg); }
+  50% { transform: scale(1.04, 0.95) rotate(-0.6deg); }
+  75% { transform: scale(0.97, 1.06) rotate(2deg); }
+  100% { transform: scale(1.02, 0.98) rotate(-1deg); }
+}
+
+.hero__torch-head { fill: #a0662f; }
+.hero__torch-wrap { fill: none; stroke: #6e4220; stroke-width: 3; stroke-linecap: round; }
+.hero__torch-band { fill: #6e4220; }
+.hero__torch-pole { fill: #7a5230; }
+
+@media (min-width: 1024px) {
+  .hero__torch { display: block; }
+}
+
+/* Title: the two words rise in, and "Posse" glows like hot metal */
+.hero__word {
+  display: inline-block;
+}
+
+.hero__word--fire {
+  color: var(--toka-yellow);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__word--fire {
+    background: linear-gradient(100deg, #f6c623 0%, #ffe9a3 16%, #f6a023 34%, #e8642c 50%, #f6a023 66%, #ffe9a3 84%, #f6c623 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: molten 8s linear infinite;
+  }
+}
+
+.fx .hero__eyebrow,
+.fx .hero__word,
+.fx .hero__subtitle,
+.fx .hero__stats.is-entering .stat {
+  animation: rise-in 0.8s var(--ease-out) var(--d, 0ms) backwards;
+}
+
+.fx .hero__eyebrow { --d: 60ms; }
+.fx .hero__word { --d: 160ms; }
+.fx .hero__word--fire { --d: 280ms; animation: rise-in 0.8s var(--ease-out) var(--d) backwards, molten 8s linear infinite; }
+.fx .hero__subtitle { --d: 440ms; }
+.fx .hero__stats .stat { --d: calc(150ms + var(--i, 0) * 80ms); }
+
+.stat {
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease-out);
+}
+
+/* "Live" marker shown while the episode-night watcher is checking Wikipedia */
+.live-dot {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.42em;
+  margin-right: 0.34em;
+  border-radius: 50%;
+  vertical-align: 0.14em;
+  background: #4ade80;
+  animation: live-pulse 1.8s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  from { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+  to { box-shadow: 0 0 0 0.6em rgba(74, 222, 128, 0); }
+}
+
+/* ---------- Buff stripe: all four buffs, drifting ---------- */
+.buff-stripe {
+  animation: stripe 36s linear infinite;
+}
+
+@keyframes stripe {
+  to { background-position: 480px 0; }
+}
+
+/* ---------- Nav: reading progress + current section ---------- */
+.nav__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 3px;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--torch-orange), var(--toka-yellow));
+  pointer-events: none;
+}
+
+.nav__link {
+  position: relative;
+}
+
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--torch-orange);
+  transform: scaleX(0);
+  transition: transform 0.35s var(--ease-out);
+}
+
+.nav__link[aria-current] {
+  color: var(--text);
+}
+
+.nav__link[aria-current]::after {
+  transform: scaleX(1);
+}
+
+.theme-toggle {
+  transition: transform 0.5s var(--ease-spring), background 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: rotate(-25deg);
+}
+
+.theme-toggle:active {
+  transform: rotate(155deg);
+}
+
+/* ---------- Scroll reveals ---------- */
+/* fx.js adds .is-in as each .reveal scrolls into view, and sets --d to stagger a batch */
+.fx .reveal {
+  opacity: 0;
+}
+
+.fx .reveal.is-in {
+  opacity: 1;
+  animation: rise-in 0.7s var(--ease-out) var(--d, 0ms) backwards;
+}
+
+.section__title::before {
+  transform-origin: 50% 100%;
+}
+
+.fx .reveal.is-in .section__title::before {
+  animation: bar-grow 0.7s var(--ease-spring) calc(var(--d, 0ms) + 0.2s) backwards;
+}
+
+@keyframes bar-grow {
+  from { transform: scaleY(0); }
+}
+
+/* Standings rows slide in one after another (each row carries its own --d) */
+.fx .standings.is-in tbody tr {
+  animation: row-in 0.55s var(--ease-out) var(--d, 0ms) backwards;
+}
+
+@keyframes row-in {
+  from { opacity: 0; transform: translateX(-16px); }
+}
+
+.standings__table tbody tr {
+  transition: background 0.2s ease;
+}
+
+/* ---------- Torches: ignite on reveal, smoke when snuffed ---------- */
+.torch__fire {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* --t is the torch's position in its row of three */
+.fx .reveal.is-in .torch__fire {
+  animation: ignite 0.7s var(--ease-spring) calc(var(--d, 0ms) + var(--t, 0) * 130ms + 0.45s) backwards;
+}
+
+@keyframes ignite {
+  0% { opacity: 0; transform: scale(0); }
+  60% { opacity: 1; transform: scale(1.35); }
+}
+
+.torch__smoke {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: smoke 3.8s ease-in-out calc(var(--t, 0) * -1.2s) infinite;
+}
+
+/* Keep neighbouring wisps out of step with each other */
+.castaway:nth-child(3n + 2) .torch__smoke { animation-delay: -1.3s; }
+.castaway:nth-child(3n) .torch__smoke { animation-delay: -2.5s; }
+
+@keyframes smoke {
+  0% { opacity: 0; transform: translateY(2px) scaleY(0.6); }
+  35% { opacity: 0.85; }
+  100% { opacity: 0; transform: translateY(-4px) scaleY(1.15) skewX(-8deg); }
+}
+
+/* ---------- Castaways: hover, and the colour draining out when snuffed ---------- */
+.castaway__photo img {
+  transition: transform 0.6s var(--ease-out), filter 0.6s ease;
+}
+
+.castaway.is-out .castaway__photo::after {
+  transition: opacity 0.6s ease;
+}
+
+.fx .reveal.is-in .castaway.is-out .castaway__photo img {
+  animation: snuff-photo 1.3s ease calc(var(--d, 0ms) + 0.55s) backwards;
+}
+
+.fx .reveal.is-in .castaway.is-out .castaway__photo::after {
+  animation: fade-in 1.3s ease calc(var(--d, 0ms) + 0.55s) backwards;
+}
+
+/* Same filter list as the resting state so the browser can interpolate it */
+@keyframes snuff-photo {
+  from { filter: grayscale(0) contrast(1) brightness(1); }
+}
+
+/* ---------- Cards: lift and a warm glow that follows the cursor ---------- */
+.card {
+  position: relative;
+}
+
+.chip {
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.chip:active {
+  transform: scale(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .castaway:hover .castaway__photo img {
+    transform: scale(1.06);
+  }
+
+  /* Hovering a snuffed castaway brings a little colour back */
+  .castaway.is-out:hover .castaway__photo img {
+    filter: grayscale(0.15) contrast(1) brightness(0.95);
+  }
+
+  .castaway.is-out:hover .castaway__photo::after {
+    opacity: 0.35;
+  }
+
+  .player-card,
+  .tribe,
+  .cast-card,
+  .rule,
+  .boot {
+    transition: transform 0.35s var(--ease-out), box-shadow 0.35s ease;
+  }
+
+  .player-card:hover,
+  .tribe:hover,
+  .cast-card:hover,
+  .rule:hover,
+  .boot:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* fx.js keeps --mx / --my at the cursor position */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(232, 100, 44, 0.13), transparent 62%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+
+  .card:hover::after {
+    opacity: 1;
+  }
+
+  .standings__table tbody tr:hover {
+    background: var(--surface-2);
+  }
+
+  .stat:hover {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- Champion (after the finale) ---------- */
+.standings__table tr.is-champion td {
+  background: var(--status-gold-bg);
+}
+
+.player-card.is-champion {
+  border-color: var(--toka-yellow);
+  box-shadow: 0 0 0 3px rgba(246, 198, 35, 0.35), var(--shadow-lg);
+}
+
+.player-card.is-champion .player-card__head {
+  color: #1d1a0a;
+  background: linear-gradient(100deg, #d9a800 0%, #f6c623 22%, #fff0b3 50%, #f6c623 78%, #d9a800 100%);
+  background-size: 200% 100%;
+  animation: molten 6s linear infinite;
+}
+
+.player-card.is-champion .player-card__rank {
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ---------- View transitions: cast filter shuffle, dark-mode reveal ---------- */
+::view-transition-group(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Cards only get a name while the filter is changing, so they glide to their new spots */
+html.vt-cast .cast-card {
+  view-transition-name: var(--vt);
+}
+
+/* Its own layer, so cards gliding past stay underneath the sticky nav */
+html.vt-cast .nav {
+  view-transition-name: site-nav;
+}
+
+/* The theme switch is driven from app.js as a circle growing out of the toggle */
+html.vt-theme::view-transition-old(root),
+html.vt-theme::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media print {
+  .fx .reveal {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .hero__torch::before,
+  .hero__flame,
+  .hero__word--fire,
+  .buff-stripe,
+  .torch__smoke,
+  .live-dot,
+  .player-card.is-champion .player-card__head {
+    animation: none;
+  }
+
+  .hero__embers {
+    display: none;
+  }
+
+  .castaway__photo img,
+  .castaway.is-out .castaway__photo::after,
+  .card,
+  .card::after,
+  .chip,
+  .stat,
+  .nav__link::after,
+  .theme-toggle {
+    transition: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

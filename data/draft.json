@@ -2,7 +2,7 @@
   "rules": {
     "champion": "If your winner pick wins the season, you win the draft.",
     "points": "1 point for each of your three picks who makes the final three.",
-    "tiebreaker": "Whoever's winner pick lasted longer in the game.",
+    "tiebreaker": "Whoever's winner pick lasted longer in the game; at the finale the runner-up beats the 2nd runner-up. If the jury ties them, the better combined finish of all three picks.",
     "noChampion": "If nobody picked the winner, the most points wins (same tiebreaker)."
   },
   "players": [
