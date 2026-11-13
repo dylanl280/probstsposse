@@ -30,11 +30,13 @@
     blue: { color: "var(--tovuto-blue)", ink: "#fff" },
   };
 
-  let state = { cast: null, draft: null, castFilter: "all", lastUpdated: undefined, live: false };
+  let state = { cast: null, draft: null, rows: null, castFilter: "all", lastUpdated: undefined, live: false };
 
   // js/fx.js is optional polish: if it failed to load, everything still renders
   const FX = window.PosseFX || null;
   if (!FX) document.documentElement.classList.remove("fx");
+  // js/council.js is optional too: without it the Boot Order is a plain list
+  const Council = window.PosseCouncil && window.PosseCouncil.supported ? window.PosseCouncil : null;
   // Set to " reveal" during a full render, so fresh cards animate in as they scroll into view
   let reveal = "";
 
@@ -46,6 +48,8 @@
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
     })[ch]);
   }
+
+  const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   function statusOf(c) {
     return STATUS[c.status] || STATUS.active;
@@ -107,6 +111,17 @@
     return bits.join(" · ");
   }
 
+  /** A castaway's placement, for display. Text that Wikipedia struck through is
+      dropped, along with any other markup left in the cell. */
+  function finishText(c) {
+    const text = String(c.finish || "")
+      .replace(/<(s|del|strike)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return text || statusOf(c).label;
+  }
+
   /** Photo + name + status block used across the page. */
   function castawayBlock(c, { meta = "", showTribe = false, photoOnly = false } = {}) {
     const s = statusOf(c);
@@ -136,14 +151,15 @@
 
   /** Tiki torch: flame on top when lit, a wisp of smoke when snuffed.
       `index` is its place in a row of torches, so they light one after another. */
-  function torchSvg(lit, index = 0) {
-    const top = lit
-      ? `<g class="torch__fire"><g class="torch__flame">
+  function torchSvg(lit, index = 0, snuffing = false) {
+    const fire = `<g class="torch__fire"><g class="torch__flame">
            <path class="torch__flame-outer" d="M10 1C13.8 5.6 15.6 8.6 15.1 11.6C14.6 14.4 12.6 15.8 10 15.8S5.4 14.4 4.9 11.6C4.5 9 6.6 7.2 7.6 4.6C8.3 6.4 9.2 7 9.8 7.3C10.4 5.4 10.3 3.2 10 1Z"/>
            <path class="torch__flame-inner" d="M10 7.6C11.8 9.8 12.7 11.2 12.4 12.8C12.1 14.2 11.2 14.9 10 14.9S7.9 14.2 7.6 12.8C7.3 11.2 8.6 9.8 10 7.6Z"/>
-         </g></g>`
-      : `<path class="torch__smoke" d="M10 14.5C8.2 12.4 11.8 10.6 10 8.2C8.6 6.4 11.2 4.6 10.2 2.2"/>`;
-    return `<svg class="torch${lit ? "" : " is-snuffed"}" viewBox="0 0 20 44" style="--t:${index}" aria-hidden="true">
+         </g></g>`;
+    const smoke = `<path class="torch__smoke" d="M10 14.5C8.2 12.4 11.8 10.6 10 8.2C8.6 6.4 11.2 4.6 10.2 2.2"/>`;
+    const top = snuffing ? fire + smoke : lit ? fire : smoke;
+    const cls = snuffing ? "torch torch--snuffing" : lit ? "torch" : "torch is-snuffed";
+    return `<svg class="${cls}" viewBox="0 0 20 44" style="--t:${index}" aria-hidden="true">
       ${top}
       <path class="torch__head" d="M4.2 15.4H15.8L13.8 23.6H6.2Z"/>
       <path class="torch__wrap" d="M4.9 18.2H15.1M5.6 21H14.4M7.4 15.6L9 23.4M12.6 15.6L11 23.4"/>
@@ -270,7 +286,7 @@
           ? `<span class="status status--out">Playing for 2nd</span>`
           : `<span class="status status--active">Winner pick alive</span>`;
       return `
-        <tr${r.champion && over ? ` class="is-champion"` : ""} style="--d:${i * 60}ms">
+        <tr${r.champion && over ? ` class="is-champion"` : ""} data-key="${esc(slug(r.player.name))}" style="--d:${i * 60}ms">
           <td class="rank rank--${r.rank}">${esc(rankLabel(r))}</td>
           <td><span class="player-name">${esc(r.player.name)}</span></td>
           <td>
@@ -330,7 +346,7 @@
                   ${spokenLine(w)}
                   ${tribeTag(w.tribe)}
                   <div class="castaway__meta">${esc(w.occupation)} · ${esc(w.hometown)}</div>
-                  ${wOut ? `<div class="castaway__meta">${esc(w.finish || statusOf(w).label)}${outDetail(w) ? " · " + esc(outDetail(w)) : ""}</div>` : ""}
+                  ${wOut ? `<div class="castaway__meta">${esc(finishText(w))}${outDetail(w) ? " · " + esc(outDetail(w)) : ""}</div>` : ""}
                 </div>
               </div>
             </div>
@@ -375,16 +391,22 @@
     const out = state.cast.castaways
       .filter((c) => statusOf(c).out)
       .sort((a, b) => a.bootOrder - b.bootOrder);
+    const open = Council ? (c) => `<button class="boot__btn" type="button" data-council="${esc(c.id)}">` : () => `<div class="boot__btn">`;
+    const close = Council ? "</button>" : "</div>";
     $("boot-list").innerHTML = out.length
       ? out.map((c) => `
-          <li class="card boot${reveal}">
-            <span class="boot__num">${c.bootOrder}</span>
-            <img class="boot__photo" src="${esc(c.photo)}" alt="" width="56" height="56">
-            <div>
-              <div class="boot__name">${esc(c.shortName)}</div>
-              <div class="boot__detail">${esc(c.finish || statusOf(c).label)}</div>
-              <div class="boot__detail">${esc(outDetail(c))} · ${esc(tribeName(c.tribe))}</div>
-            </div>
+          <li class="card boot${reveal}" style="${tribeStyle(c.tribe)}">
+            ${open(c)}
+              <span class="boot__num">${c.bootOrder}</span>
+              <img class="boot__photo" src="${esc(c.photo)}" alt="" width="56" height="56" loading="lazy">
+              <span class="boot__text">
+                <span class="boot__name">${esc(c.shortName)}</span>
+                <span class="boot__detail">${esc(finishText(c))}</span>
+                <span class="boot__detail">${esc([outDetail(c), tribeName(c.tribe)].filter(Boolean).join(" · "))}</span>
+                ${Council ? `<span class="visually-hidden">Replay the torch snuffing</span>` : ""}
+              </span>
+              ${torchSvg(false, 0, true)}
+            ${close}
           </li>`).join("")
       : `<li class="card empty">No one has been voted out yet.</li>`;
   }
@@ -419,11 +441,14 @@
 
   function renderAll() {
     const rows = computeStandings();
+    // The first render of a visit animates everything in. A live update does not
+    // replay entrances: the standings rows glide to their new places instead
+    const isUpdate = Boolean(state.rows);
     state.rows = rows;
-    // Only a full render marks cards for the scroll reveal: on first load, and
-    // again whenever new statuses land, so the board visibly refreshes
-    reveal = FX ? " reveal" : "";
-    renderHero(true);
+    reveal = FX && !isUpdate ? " reveal" : "";
+    const settle = FX && isUpdate ? FX.trackRows("#standings-table tbody tr[data-key]") : null;
+    $("standings-table").classList.toggle("is-entering", !isUpdate);
+    renderHero(!isUpdate);
     renderStandings(rows);
     renderDraft(rows);
     renderTribes();
@@ -432,7 +457,58 @@
     renderCast();
     reveal = "";
     if (FX) FX.scan();
+    if (settle) settle();
     celebrate(rows);
+  }
+
+  // ---------- Tribal Council: who has this visitor not seen leave yet? ----------
+  function bootsInOrder() {
+    return state.cast.castaways.filter((c) => statusOf(c).out && c.bootOrder)
+      .sort((a, b) => a.bootOrder - b.bootOrder);
+  }
+
+  let seenBoot = null;   // copy in memory, for browsers where storage is unavailable
+
+  /** Castaways eliminated since this visitor last looked, oldest first. Records the
+      latest one as seen straight away, so a ceremony never plays twice. A first
+      visit returns none: the back catalogue is not replayed. */
+  function unseenBoots() {
+    const out = bootsInOrder();
+    const latest = out.length ? out[out.length - 1].bootOrder : 0;
+    const key = `posse:s${state.cast.season}:seenBoot`;
+    let seen = seenBoot;
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved !== null) seen = Number(saved);
+      localStorage.setItem(key, String(latest));
+    } catch (e) { /* storage unavailable: remembered for this visit only */ }
+    seenBoot = latest;
+    if (seen === null || !Number.isFinite(seen)) return [];
+    const fresh = out.filter((c) => c.bootOrder > seen);
+    // Back after a long break: only the most recent exit plays
+    return fresh.length > 2 ? fresh.slice(-1) : fresh;
+  }
+
+  /** ?council=latest or ?council=<castaway id> plays a ceremony on load (for previews). */
+  function councilFromUrl() {
+    const want = new URLSearchParams(location.search).get("council");
+    if (!want) return [];
+    const out = bootsInOrder();
+    const c = want === "latest" ? out[out.length - 1] : out.find((x) => x.id === want);
+    return c ? [c] : [];
+  }
+
+  function councilData(c) {
+    const s = statusOf(c);
+    return {
+      name: c.name,
+      shortName: c.shortName,
+      photo: c.photo,
+      finish: finishText(c),
+      detail: outDetail(c),                                   // "Episode 7 · Day 14"
+      line: s.spoken ? "The tribe has spoken." : `${s.label}.`, // medevac and quit get their own line
+      style: tribeStyle(c.tribe),
+    };
   }
 
   /** Confetti for the draft champion, once per visit. */
@@ -500,8 +576,17 @@
       state.live = live;
       state.lastChecked = lastChecked;
       $("error").innerHTML = "";
-      if (changed) renderAll();
-      else if (heroChanged) renderHero(false);
+      if (changed) {
+        const isUpdate = Boolean(state.rows);
+        let queue = Council ? unseenBoots() : [];
+        if (Council && !isUpdate && !queue.length) queue = councilFromUrl();
+        const show = () => Council.play(queue.map(councilData)).catch(() => {});
+        // Live update: the ceremony first, then the standings change behind it
+        if (queue.length && isUpdate) await show();
+        renderAll();
+        // First render: let the page arrive, then the ceremony
+        if (queue.length && !isUpdate) setTimeout(show, 1400);
+      } else if (heroChanged) renderHero(false);
     } catch (err) {
       console.error(err);
       if (!state.cast) {
@@ -540,6 +625,15 @@
     else renderCast();
   });
 
+  $("boot-list").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-council]");
+    if (!btn || !Council) return;
+    const c = state.cast.castaways.find((x) => x.id === btn.dataset.council);
+    if (c) Council.play([councilData(c)], { opener: btn, manual: true });
+  });
+
+  if (Council) $("boot-hint").hidden = false;
+
   function applyTheme(theme) {
     if (theme) document.documentElement.dataset.theme = theme;
     else delete document.documentElement.dataset.theme;
@@ -567,6 +661,26 @@
       );
     }).catch(() => { /* transition skipped */ });
   });
+
+  // Footer switch: animations off or on, remembered on this device. It stays hidden
+  // when the device itself asks for reduced motion: that setting always wins
+  const motionToggle = $("motion-toggle");
+  if (motionToggle && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const off = document.documentElement.classList.contains("still");
+    motionToggle.textContent = off ? "Turn animations on" : "Turn animations off";
+    motionToggle.hidden = false;
+    motionToggle.addEventListener("click", () => {
+      try {
+        if (off) localStorage.removeItem("posse:motion");
+        else localStorage.setItem("posse:motion", "off");
+      } catch (e) {
+        motionToggle.hidden = true;   // nowhere to remember the choice
+        return;
+      }
+      // The head script decides motion before first paint, so start the page again
+      location.reload();
+    });
+  }
 
   load();
   document.addEventListener("visibilitychange", () => {

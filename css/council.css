@@ -87,3 +87,234 @@ body::before {
   opacity: 0.9;
   pointer-events: none;
 }
+
+/* ---------- Boot Order band = Tribal Council ---------- */
+/* Two classes, so this border beats `.section + .section` in global.css */
+.section.section--council {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(232, 139, 53, 0.16), transparent 70%),
+    var(--night);
+  border-top: 1px solid rgba(232, 139, 53, 0.25);
+}
+.section--council > .container { position: relative; z-index: 1; }
+
+.council-embers {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+}
+
+/* Torchlight: a warm pool at the top that breathes */
+.section--council::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 50% at 50% 0%, rgba(242, 198, 109, 0.1), transparent 70%);
+}
+.fx .section--council::before { animation: torchlight 5s ease-in-out infinite alternate; }
+@keyframes torchlight {
+  0% { opacity: 0.55; } 35% { opacity: 0.9; } 60% { opacity: 0.7; } 100% { opacity: 1; }
+}
+
+/* Smoke: two soft gradients drifting very slowly. No blur filter (too costly) */
+.section--council::after {
+  content: ""; position: absolute; inset: -20% -10%; pointer-events: none;
+  background:
+    radial-gradient(40% 30% at 20% 70%, rgba(216, 198, 160, 0.07), transparent 70%),
+    radial-gradient(45% 35% at 78% 40%, rgba(216, 198, 160, 0.06), transparent 70%);
+}
+.fx .section--council::after { animation: smoke-drift 38s ease-in-out infinite alternate; }
+@keyframes smoke-drift {
+  from { transform: translate3d(-3%, 2%, 0); }
+  to { transform: translate3d(4%, -3%, 0) scale(1.12); }
+}
+
+/* ---------- Smoke veil for far nav jumps ---------- */
+.smoke-veil {
+  position: fixed; inset: 0; z-index: 45;          /* under the nav (50) */
+  pointer-events: none; opacity: 0;
+  background:
+    radial-gradient(60% 50% at 30% 60%, rgba(216, 198, 160, 0.16), transparent 70%),
+    radial-gradient(55% 45% at 72% 40%, rgba(216, 198, 160, 0.12), transparent 70%),
+    rgba(11, 16, 14, 0.82);
+  transition: opacity 0.38s ease;
+}
+.smoke-veil.is-on { opacity: 1; transition-duration: 0.24s; }
+
+/* ---------- The card's torch burns for a beat, then goes out ---------- */
+.torch--snuffing { --torch-head: var(--torch-dead); --torch-pole: var(--torch-dead); }
+.torch--snuffing .torch__fire { opacity: 0; }
+.torch--snuffing .torch__flame { animation: none; }   /* no hidden endless flicker */
+
+/* These three out-rank the generic `.fx .reveal.is-in .torch__fire` ignite rule */
+.fx .reveal.is-in .torch--snuffing .torch__fire {
+  animation: boot-snuff 2.2s ease calc(var(--d, 0ms) + 0.3s) backwards;
+}
+.fx .reveal.is-in .torch--snuffing .torch__flame {
+  animation: flicker 0.8s ease-in-out calc(var(--d, 0ms) + 0.3s) 3 alternate;
+}
+.fx .reveal.is-in .torch--snuffing .torch__smoke {
+  animation-delay: calc(var(--d, 0ms) + 2.4s);
+  animation-fill-mode: backwards;      /* no smoke until the flame is out */
+}
+/* global.css starts the smoke loop as soon as a torch exists. Hold it until the card
+   is revealed, so the delay above is counted from the reveal, not from page load */
+.fx .reveal:not(.is-in) .torch--snuffing .torch__smoke { animation: none; }
+@keyframes boot-snuff {
+  0% { opacity: 0; transform: scale(0); }
+  18% { opacity: 1; transform: scale(1.2); }
+  30%, 62% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.3, 0); }
+}
+
+/* ---------- The ceremony ---------- */
+.council {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh; height: 100dvh;
+  max-width: none; max-height: none;          /* undo the browser's dialog limits */
+  margin: 0; padding: 0; border: 0;
+  color: var(--ivory);
+  background: rgba(11, 16, 14, 0.94);
+  overflow: hidden;
+}
+/* display only while open: a closed <dialog> must stay display:none */
+.council[open] { display: grid; place-items: center; animation: fade-in 0.4s ease; }
+.council::backdrop { background: rgba(11, 16, 14, 0.6); }
+.council.is-leaving { opacity: 0; transition: opacity 0.5s ease; }
+html:has(dialog.council[open]) { overflow: hidden; }   /* the page does not scroll behind it */
+html { scrollbar-gutter: stable; }   /* so hiding the scrollbar does not shift the page sideways */
+
+/* Firelight on the scene, which dims when the torch goes out */
+.council::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(70% 55% at 50% 38%, rgba(232, 139, 53, 0.26), transparent 70%);
+  transition: opacity 1.6s ease;
+}
+.council.is-snuff::before { opacity: 0.15; }
+
+.council__stage {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  width: min(100%, 440px); max-height: 100%;
+  padding: 24px; overflow-y: auto; text-align: center;
+}
+
+.council__eyebrow {
+  margin: 0;
+  font-family: var(--font-display); font-size: var(--fs-label); font-weight: 500;
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--fire-gold);
+}
+
+.council__scene {
+  display: flex; align-items: flex-end; justify-content: center; gap: 18px;
+  height: clamp(190px, 36vh, 300px);
+}
+
+.council__photo {
+  align-self: center;
+  width: clamp(120px, 34vw, 190px); height: auto; aspect-ratio: 1;
+  border-radius: 50%; object-fit: cover; object-position: center 30%;
+  border: 4px solid var(--tribe-color, var(--merge-teal));
+  box-shadow: 0 0 0 1px var(--hairline), 0 0 40px rgba(232, 139, 53, 0.35);
+  transition: filter 1.4s ease, border-color 1.4s ease, box-shadow 1.4s ease;
+}
+.council.is-out .council__photo {
+  filter: grayscale(1) contrast(1.05) brightness(0.72);
+  border-color: var(--blood-red);
+  box-shadow: 0 0 0 1px var(--hairline), 0 0 0 5px rgba(165, 42, 42, 0.45);
+}
+
+.council__torch { height: 100%; width: auto; flex: none; overflow: visible; }
+.council__flame--outer { fill: var(--torch-orange); }
+.council__flame--mid { fill: #F2A93B; }
+.council__flame--inner { fill: #FFE9B0; }
+.council__pole { fill: #7A5230; }
+.council__head { fill: #A0662F; }
+.council__band { fill: #6E4220; }
+.council__wrap { fill: none; stroke: #6E4220; stroke-width: 3; }
+
+.council__fire {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  transition: transform 0.7s cubic-bezier(0.5, 0, 0.8, 0.4), opacity 0.7s ease;
+}
+.council__flame { transform-box: fill-box; transform-origin: 50% 100%; }
+.fx .council__flame { animation: flicker 1.6s ease-in-out infinite alternate; }
+.fx .council__flame--mid { animation-delay: -0.5s; }
+.fx .council__flame--inner { animation-delay: -1.1s; }
+.council.is-snuff .council__fire { transform: scale(0.2, 0); opacity: 0; }
+
+.council__smoke {
+  fill: none; stroke: var(--torch-dead); stroke-width: 3; stroke-linecap: round;
+  opacity: 0; transform-box: fill-box; transform-origin: 50% 100%;
+}
+.council.is-snuff .council__smoke { opacity: 0.45; }
+.fx .council.is-snuff .council__smoke { animation: council-smoke 3.2s ease-out forwards; }
+@keyframes council-smoke {
+  0% { opacity: 0; transform: translateY(10px) scaleY(0.5); }
+  25% { opacity: 0.85; }
+  100% { opacity: 0.35; transform: translateY(-26px) scaleY(1.25) skewX(-6deg); }
+}
+
+/* The vote: a slip of parchment with their name on it */
+.council__vote {
+  padding: 10px 22px; border-radius: 3px;
+  font-family: var(--font-display); font-size: clamp(1.5rem, 6vw, 2.2rem); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.1;
+  color: #2A2118;
+  background: linear-gradient(175deg, #EFE2C2, #E2D0A6 60%, #C9B283);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  opacity: 0; transform: translateY(24px) rotate(-4deg) scale(0.9);
+  transition: opacity 0.5s ease, transform 0.7s var(--ease-spring);
+}
+.council.is-vote .council__vote { opacity: 1; transform: rotate(-2deg); }
+
+.council__name {
+  margin: 6px 0 0;
+  font-family: var(--font-display); font-size: clamp(1.6rem, 6vw, 2.4rem); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.03em; line-height: 1.1;
+}
+.council__finish { margin: 0; color: var(--sandstone); }
+.council__line {
+  margin: 0; min-height: 1.4em;
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--ember-red);
+  opacity: 0; transition: opacity 1s ease 0.4s;
+}
+.council.is-out .council__line { opacity: 1; }
+
+.council__actions { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.council__count { font-size: var(--fs-label); color: var(--sandstone); }
+.council__count:empty { display: none; }
+.council__close {
+  min-height: 44px; padding: 0 22px; border-radius: 999px;
+  border: 1px solid var(--border-strong); background: transparent;
+  font: inherit; font-weight: 600; color: var(--sandstone); cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.council__close:hover,
+.council.is-done .council__close { color: var(--fire-gold); border-color: var(--fire-gold); }
+.council__close:hover { box-shadow: var(--glow-gold); }
+
+/* A few embers rising behind the scene: CSS only, and only while the torch burns */
+.council__embers { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.council__embers i {
+  position: absolute; bottom: 30%; left: calc(50% + var(--x, 0px));
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--fire-gold); box-shadow: 0 0 8px 2px rgba(232, 139, 53, 0.7);
+  opacity: 0;
+}
+.council__embers i:nth-child(1) { --x: -70px; animation-delay: 0s; }
+.council__embers i:nth-child(2) { --x: 46px; animation-delay: 0.7s; }
+.council__embers i:nth-child(3) { --x: -18px; animation-delay: 1.3s; }
+.council__embers i:nth-child(4) { --x: 88px; animation-delay: 1.9s; }
+.council__embers i:nth-child(5) { --x: -110px; animation-delay: 2.4s; }
+.council__embers i:nth-child(6) { --x: 14px; animation-delay: 3.1s; }
+.fx .council[open]:not(.is-snuff) .council__embers i {
+  animation-name: council-ember; animation-duration: 3.6s;
+  animation-timing-function: ease-out; animation-iteration-count: infinite;
+}
+@keyframes council-ember {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
+  15% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(22px, -42vh, 0) scale(0.4); }
+}

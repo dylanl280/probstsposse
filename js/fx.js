@@ -34,7 +34,8 @@
   };
 
   // ---------- hero embers ----------
-  function startEmbers(canvas) {
+  function startEmbers(canvas, options) {
+    const max = (options && options.max) || 80;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -74,7 +75,7 @@
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const count = Math.round(Math.min(80, Math.max(22, width / 18)));
+      const count = Math.round(Math.min(max, Math.max(Math.min(22, max), width / 18)));
       while (embers.length < count) embers.push(spawn(true));
       embers.length = count;
     }
@@ -209,6 +210,39 @@
     if (wide.addEventListener) wide.addEventListener("change", () => setOpen(false));
   }
 
+  // ---------- far jumps: a breath of smoke instead of a long scroll ----------
+  function startJumps() {
+    const veil = document.createElement("div");
+    veil.className = "smoke-veil";
+    veil.setAttribute("aria-hidden", "true");
+    document.body.appendChild(veil);
+    let busy = false;
+
+    document.addEventListener("click", (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const link = e.target instanceof Element ? e.target.closest('a[href^="#"]') : null;
+      if (!link) return;
+      const id = link.getAttribute("href").slice(1);
+      const target = id ? document.getElementById(id) : null;
+      if (!target) return;
+      // 72 = scroll-padding-top in global.css (the sticky nav's height plus air)
+      const top = id === "top" ? 0 : target.getBoundingClientRect().top + window.scrollY - 72;
+      if (busy || Math.abs(top - window.scrollY) < window.innerHeight * 1.5) return;
+      e.preventDefault();
+      busy = true;
+      veil.classList.add("is-on");
+      setTimeout(() => {
+        root.style.scrollBehavior = "auto";
+        window.scrollTo(0, top);
+        root.style.scrollBehavior = "";
+        history.pushState(null, "", `#${id}`);
+        target.focus({ preventScroll: true });
+        veil.classList.remove("is-on");
+        setTimeout(() => { busy = false; }, 400);
+      }, 260);
+    });
+  }
+
   // ---------- cards: glow follows the cursor ----------
   function startGlow() {
     if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
@@ -244,6 +278,35 @@
         if (t < 1) requestAnimationFrame(step);
       })(start);
     }, delay || 0);
+  };
+
+  // ---------- standings: rows glide to their new places ----------
+  /** Call before re-rendering rows that carry data-key, then call the function it
+      returns once the new rows are in the page. Rows that moved slide from where
+      they were (FLIP). */
+  FX.trackRows = function (selector) {
+    if (reduced || !Element.prototype.animate) return function () {};
+    const before = new Map();
+    document.querySelectorAll(selector).forEach((row) => {
+      before.set(row.dataset.key, row.getBoundingClientRect().top);
+    });
+    return function () {
+      document.querySelectorAll(selector).forEach((row) => {
+        const was = before.get(row.dataset.key);
+        if (was === undefined) return;
+        const dy = was - row.getBoundingClientRect().top;
+        if (Math.abs(dy) < 1) return;
+        // Table rows do not take transforms reliably, so move their cells
+        Array.from(row.children).forEach((cell) => {
+          cell.animate(
+            [{ transform: `translateY(${dy}px)` }, { transform: "none" }],
+            { duration: 650, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" },
+          );
+        });
+        row.classList.add("is-moved");
+        setTimeout(() => row.classList.remove("is-moved"), 1600);
+      });
+    };
   };
 
   // ---------- confetti in buff colours, for the champion ----------
@@ -339,9 +402,14 @@
   };
 
   // ---------- start ----------
-  const embers = document.getElementById("embers");
-  if (embers && !reduced && "IntersectionObserver" in window) startEmbers(embers);
+  if (!reduced && "IntersectionObserver" in window) {
+    const embers = document.getElementById("embers");
+    const councilEmbers = document.getElementById("council-embers");
+    if (embers) startEmbers(embers);
+    if (councilEmbers) startEmbers(councilEmbers, { max: 26 });
+  }
   startNav();
   if (!reduced) startGlow();
+  if (!reduced) startJumps();
   FX.scan();
 })();

@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="css/council.css?v=dev">
 </head>
 <body>
-  <header class="hero night" id="top">
+  <header class="hero night" id="top" tabindex="-1">
     <canvas class="hero__embers" id="embers" aria-hidden="true"></canvas>
     <svg class="hero__fronds hero__fronds--left" viewBox="0 0 260 220" aria-hidden="true" focusable="false">
       <g>
@@ -116,7 +116,7 @@
   <main id="main">
     <div id="error"></div>
 
-    <section class="section" id="standings">
+    <section class="section" id="standings" tabindex="-1">
       <div class="container">
         <div class="section__header reveal">
           <div>
@@ -128,7 +128,7 @@
       </div>
     </section>
 
-    <section class="section" id="draft">
+    <section class="section" id="draft" tabindex="-1">
       <div class="container">
         <div class="section__header reveal">
           <div>
@@ -140,7 +140,7 @@
       </div>
     </section>
 
-    <section class="section" id="tribes">
+    <section class="section" id="tribes" tabindex="-1">
       <div class="container">
         <div class="section__header reveal">
           <div>
@@ -152,19 +152,20 @@
       </div>
     </section>
 
-    <section class="section" id="boot-order">
+    <section class="section section--council night" id="boot-order" tabindex="-1">
+      <canvas class="council-embers" id="council-embers" aria-hidden="true"></canvas>
       <div class="container">
         <div class="section__header reveal">
           <div>
             <h2 class="section__title">Boot Order</h2>
-            <p class="section__lede">Everyone whose torch has been snuffed, in order.</p>
+            <p class="section__lede">Everyone whose torch has been snuffed, in order.<span id="boot-hint" hidden> Tap a name to relive the moment.</span></p>
           </div>
         </div>
         <ol class="boot-list" id="boot-list"></ol>
       </div>
     </section>
 
-    <section class="section" id="cast">
+    <section class="section" id="cast" tabindex="-1">
       <div class="container">
         <div class="section__header reveal">
           <div>
@@ -177,7 +178,7 @@
       </div>
     </section>
 
-    <section class="section" id="rules">
+    <section class="section" id="rules" tabindex="-1">
       <div class="container">
         <div class="section__header reveal">
           <div>
@@ -215,10 +216,12 @@
     <div class="container footer__inner">
       <span>Probst's Posse · A fan-made draft tracker. Not affiliated with CBS or Survivor.</span>
       <span id="footer-updated">Statuses sync automatically from <a href="https://en.wikipedia.org/wiki/Survivor_51" rel="noopener">Wikipedia</a>.</span>
+      <button class="footer__switch" id="motion-toggle" type="button" hidden>Turn animations off</button>
     </div>
   </footer>
 
   <script src="js/fx.js?v=dev"></script>
+  <script src="js/council.js?v=dev"></script>
   <script src="js/app.js?v=dev"></script>
 </body>
 </html>

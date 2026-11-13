@@ -384,6 +384,20 @@ h4 {
 
 .nav__tools { display: flex; align-items: center; gap: 6px; margin-left: 8px; }
 
+.nav__brand .icon path:first-child {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.fx .nav__brand .icon path:first-child {
+  animation: flicker 1.6s ease-in-out infinite alternate;
+}
+
+.hero:focus,
+.section:focus {
+  outline: none;
+}
+
 .nav__tool,
 .theme-toggle,
 .nav__menu-btn {
@@ -1000,13 +1014,25 @@ h4 {
   gap: 12px;
 }
 
-.boot {
+.boot { padding: 0; }
+
+.boot__btn {
   display: grid;
-  grid-template-columns: 44px 56px 1fr;
+  grid-template-columns: 44px 56px 1fr 20px;
   align-items: center;
   gap: 12px;
+  width: 100%;
   padding: 12px 14px;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
 }
+button.boot__btn { cursor: pointer; }
+.boot__name, .boot__detail { display: block; }
+.boot__photo { box-shadow: 0 0 0 2px var(--tribe-color, var(--merge-teal)), 0 0 0 3px var(--hairline); }
 
 .boot__num {
   font-family: var(--font-display);
@@ -1137,6 +1163,19 @@ h4 {
 .footer a {
   color: var(--fire-gold);
 }
+
+.footer__switch {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  font: inherit;
+  color: var(--sandstone);
+  cursor: pointer;
+}
+.footer__switch:hover { color: var(--fire-gold); border-color: var(--fire-gold); }
+.footer__switch[hidden] { display: none; }
 
 /* ---------- Loading / error ---------- */
 .notice {
@@ -1452,7 +1491,7 @@ h4 {
 }
 
 /* Standings rows slide in one after another (each row carries its own --d) */
-.fx .standings.is-in tbody tr {
+.fx .standings.is-in.is-entering tbody tr {
   animation: row-in 0.55s var(--ease-out) var(--d, 0ms) backwards;
 }
 
@@ -1462,6 +1501,14 @@ h4 {
 
 .standings__table tbody tr {
   transition: background 0.2s ease;
+}
+
+.standings__table td {
+  transition: background 0.6s ease;
+}
+
+.standings__table tr.is-moved td {
+  background: var(--status-gold-bg);
 }
 
 /* ---------- Torches: ignite on reveal, smoke when snuffed ---------- */
@@ -1550,7 +1597,34 @@ h4 {
   .cast-card,
   .rule,
   .boot {
-    transition: transform 0.35s var(--ease-out), box-shadow 0.35s ease;
+    transition: transform 0.35s var(--ease-out), box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+
+  .player-card:hover,
+  .tribe:hover,
+  .cast-card:hover,
+  .boot:hover {
+    border-color: var(--gold);
+  }
+
+  .boot:hover .boot__photo,
+  .mini-pick:hover img {
+    transform: scale(1.06);
+  }
+
+  .rule:hover .rule__icon {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .chip:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+    box-shadow: var(--glow-gold);
+  }
+
+  .chip[aria-pressed="true"]:hover {
+    color: var(--charcoal);
+    box-shadow: var(--glow-fire);
   }
 
   .player-card:hover,
@@ -1588,6 +1662,20 @@ h4 {
     border-color: rgba(242, 198, 109, 0.55);
     transform: translateY(-2px);
   }
+}
+
+.boot__photo,
+.mini-pick img {
+  transition: transform 0.6s var(--ease-out);
+}
+
+.rule__icon {
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.player-card.egg-open {
+  border-color: var(--gold);
+  box-shadow: var(--glow-gold), var(--shadow-lg);
 }
 
 /* ---------- Champion (after the finale) ---------- */
@@ -1710,6 +1798,9 @@ html.vt-theme::view-transition-new(root) {
   .stat,
   .nav__link::after,
   .nav__link .icon,
+  .boot__photo,
+  .mini-pick img,
+  .rule__icon,
   .theme-toggle {
     transition: none;
   }
