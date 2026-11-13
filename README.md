@@ -12,10 +12,15 @@ A static site (no build step, no database) that tracks our Survivor 51 draft.
 | `data/castaways.json` | Bios, photos, tribes and live status for all 21 castaways |
 | `js/app.js` | Calculates standings and renders the page |
 | `js/fx.js` | Animations. Optional: the page works without it, and it respects "reduce motion" |
-| `css/global.css` | Design tokens (buff colors) and all styles |
+| `js/council.js` | The torch-snuffing ceremony for each elimination, and its optional sound. Optional, like `fx.js` |
+| `css/global.css` | Design tokens (Survivor palette, buff colors, dark and Day themes) and the main styles |
+| `css/council.css` | Textures, the Boot Order "Tribal Council" band and the ceremony styles |
 | `scripts/update_status.py` | Pulls statuses from the Survivor 51 Wikipedia page |
 | `scripts/sync.sh` | Decides how to run the scraper: once, or as the episode-night watcher |
 | `.github/workflows/site.yml` | Starts the sync on a schedule and deploys to GitHub Pages |
+
+Preview links: `?theme=light` or `?theme=dark` shows a theme without saving it, and
+`?council=latest` (or `?council=<castaway id>`) replays a torch-snuffing ceremony.
 
 ## Keeping statuses current
 
