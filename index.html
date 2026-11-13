@@ -84,14 +84,31 @@
 
   <nav class="nav night" aria-label="Sections">
     <div class="container nav__inner">
-      <a class="nav__brand" href="#top">Probst's <span>Posse</span></a>
-      <a class="nav__link" href="#standings">Standings</a>
-      <a class="nav__link" href="#draft">Draft Board</a>
-      <a class="nav__link" href="#tribes">Tribes</a>
-      <a class="nav__link" href="#boot-order">Boot Order</a>
-      <a class="nav__link" href="#cast">Cast</a>
-      <a class="nav__link" href="#rules">Rules</a>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to the day theme"><svg class="icon theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><svg class="icon theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg></button>
+      <a class="nav__brand" href="#top">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5c2.2 2.6 3.2 4.2 3.2 6a3.2 3.2 0 0 1-6.4 0c0-1.2.7-2.2 1.4-3.2.4.8.8 1.1 1.2 1.3.3-1.3.5-2.6.6-4.1Z"/><path d="M8.5 12h7l-1.2 4h-4.6Z"/><path d="M11 16h2l-.4 6h-1.2Z"/></svg><span class="nav__brand-text">Probst's <span>Posse</span></span>
+      </a>
+      <button class="nav__menu-btn" id="nav-menu-btn" type="button"
+              aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+        <svg class="icon nav__menu-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="icon nav__menu-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="nav__links" id="nav-links">
+      <a class="nav__link" href="#top"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>Home</span></a>
+      <a class="nav__link" href="#standings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5c2.2 2.6 3.2 4.2 3.2 6a3.2 3.2 0 0 1-6.4 0c0-1.2.7-2.2 1.4-3.2.4.8.8 1.1 1.2 1.3.3-1.3.5-2.6.6-4.1Z"/><path d="M8.5 12h7l-1.2 4h-4.6Z"/><path d="M11 16h2l-.4 6h-1.2Z"/></svg><span>Standings</span></a>
+      <a class="nav__link" href="#draft"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M8.5 9.5h7M8.5 13h7M8.5 16.5h4.5"/></svg><span>Draft Board</span></a>
+      <a class="nav__link" href="#tribes"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 21V4"/><path d="M5 5c3-1.5 5 1.5 8 0s4-1 6 0v8c-2-1-3-1.5-6 0s-5-1.5-8 0"/></svg><span>Tribes</span></a>
+      <a class="nav__link" href="#boot-order"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5c2.2 2.6 3.2 4.2 3.2 6a3.2 3.2 0 0 1-6.4 0c0-1.2.7-2.2 1.4-3.2.4.8.8 1.1 1.2 1.3.3-1.3.5-2.6.6-4.1Z"/><path d="M8.5 12h7l-1.2 4h-4.6Z"/><path d="M11 16h2l-.4 6h-1.2Z"/><path d="M4 4l16 16"/></svg><span>Boot Order</span></a>
+      <a class="nav__link" href="#cast"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.4-3.6 2.8-5.5 6-5.5s5.6 1.9 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.6.2 4.2 1.9 4.5 5.4"/></svg><span>The Cast</span></a>
+      <a class="nav__link" href="#rules"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h10l3 3v15H6Z"/><path d="M16 3v3h3"/><path d="M9 10h7M9 13.5h7M9 17h4.5"/></svg><span>Rules</span></a>
+      </div>
+      <div class="nav__tools">
+        <button class="nav__tool" id="sound-toggle" type="button" aria-pressed="false"
+                aria-label="Sound effects" hidden>
+          <svg class="icon sound__on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="icon sound__off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5Z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+        </button>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to the day theme">
+          <svg class="icon theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><svg class="icon theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
     </div>
     <div class="nav__progress" id="nav-progress" aria-hidden="true"></div>
   </nav>

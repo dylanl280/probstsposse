@@ -125,17 +125,53 @@
     update();
   }
 
-  // ---------- nav: reading progress + current section ----------
+  // ---------- nav: reading progress, current section, mobile menu ----------
   function startNav() {
+    const nav = document.querySelector(".nav");
     const bar = document.getElementById("nav-progress");
-    const strip = document.querySelector(".nav__inner");
+    const strip = document.getElementById("nav-links");
+    const button = document.getElementById("nav-menu-btn");
     const links = Array.from(document.querySelectorAll(".nav__link"));
-    let queued = false;
+    const sections = Array.from(document.querySelectorAll("main .section[id]"));
+    let queued = false, currentId = null;
+
+    function setCurrent(id) {
+      if (id === currentId) return;
+      currentId = id;
+      links.forEach((link) => {
+        if (link.getAttribute("href") !== `#${id}`) {
+          link.removeAttribute("aria-current");
+          return;
+        }
+        link.setAttribute("aria-current", "location");
+        // When the links scroll sideways, keep the current one in view
+        if (strip && strip.scrollWidth > strip.clientWidth) {
+          const l = link.getBoundingClientRect(), s = strip.getBoundingClientRect();
+          strip.scrollTo({
+            left: strip.scrollLeft + (l.left - s.left) - (s.width - l.width) / 2,
+            behavior: reduced ? "auto" : "smooth",
+          });
+        }
+      });
+    }
 
     function measure() {
       queued = false;
       const max = root.scrollHeight - window.innerHeight;
       if (bar) bar.style.setProperty("--progress", max > 0 ? Math.min(1, window.scrollY / max).toFixed(4) : "0");
+      // Current = the last section whose top has passed a line 38% down the screen.
+      // Above the first section it is "top" (Home); at the very bottom it is the last
+      // section, even when that one is too short to ever reach the line
+      const line = window.innerHeight * 0.38;
+      let id = "top";
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top > line) break;
+        id = section.id;
+      }
+      if (sections.length && window.scrollY > 0 && window.scrollY >= max - 2) {
+        id = sections[sections.length - 1].id;
+      }
+      setCurrent(id);
     }
 
     function onScroll() {
@@ -146,31 +182,31 @@
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    // The page grows when app.js renders, which moves every section
+    if ("ResizeObserver" in window) new ResizeObserver(onScroll).observe(document.body);
     measure();
 
-    if (!("IntersectionObserver" in window) || !strip) return;
-    // A section is "current" while it crosses a line just above mid-screen
-    const spy = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        links.forEach((link) => {
-          const current = link.getAttribute("href") === `#${entry.target.id}`;
-          if (!current) {
-            link.removeAttribute("aria-current");
-            return;
-          }
-          link.setAttribute("aria-current", "location");
-          // On narrow screens the links scroll sideways: keep the current one in view
-          if (strip.scrollWidth > strip.clientWidth) {
-            strip.scrollTo({
-              left: link.offsetLeft - strip.offsetLeft - (strip.clientWidth - link.offsetWidth) / 2,
-              behavior: reduced ? "auto" : "smooth",
-            });
-          }
-        });
-      });
-    }, { rootMargin: "-45% 0px -55% 0px" });
-    document.querySelectorAll("main .section[id]").forEach((section) => spy.observe(section));
+    if (!nav || !button || !strip) return;
+    root.classList.add("nav-js");
+    const setOpen = (open) => {
+      nav.classList.toggle("is-open", open);
+      button.setAttribute("aria-expanded", String(open));
+    };
+    button.addEventListener("click", () => setOpen(!nav.classList.contains("is-open")));
+    strip.addEventListener("click", (e) => {
+      if (e.target.closest("a")) setOpen(false);
+    });
+    document.addEventListener("click", (e) => {
+      if (!nav.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || !nav.classList.contains("is-open")) return;
+      setOpen(false);
+      button.focus();
+    });
+    // Back on a wide screen: make sure the drop-down is not left open
+    const wide = matchMedia("(min-width: 901px)");
+    if (wide.addEventListener) wide.addEventListener("change", () => setOpen(false));
   }
 
   // ---------- cards: glow follows the cursor ----------

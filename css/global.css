@@ -320,70 +320,117 @@ h4 {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: var(--deep-jungle);       /* for browsers without color-mix() */
+  background: color-mix(in srgb, var(--deep-jungle) 92%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
 
-.nav__inner {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  min-height: 56px;
-}
-
-.nav__inner::-webkit-scrollbar {
-  display: none;
-}
+.nav__inner { display: flex; align-items: center; gap: 8px; min-height: 56px; }
 
 .nav__brand {
-  font-family: var(--font-display);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-right: auto;
-  padding-right: 16px;
-  white-space: nowrap;
-  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-right: auto; padding-right: 12px;
+  font-family: var(--font-display); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  white-space: nowrap; text-decoration: none; color: var(--ivory);
 }
+.nav__brand .icon { width: 22px; height: 22px; color: var(--torch-orange); }
+.nav__brand-text span { color: var(--torch-orange); }   /* was `.nav__brand span` */
 
-.nav__brand span {
-  color: var(--torch-orange);
+/* The links scroll sideways if they ever run out of room (and when JS is off) */
+.nav__links {
+  display: flex; align-items: center; gap: 2px;
+  min-width: 0; overflow-x: auto; scrollbar-width: none;
 }
+.nav__links::-webkit-scrollbar { display: none; }
 
 .nav__link {
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  position: relative;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  font-family: var(--font-display); font-size: var(--fs-nav); font-weight: 500;
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--sandstone); text-decoration: none; white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease;
 }
+.nav__link .icon { transition: transform 0.35s var(--ease-spring); }
 
+/* Hover: gold illumination */
 .nav__link:hover,
-.nav__link:focus-visible {
-  background: var(--surface-2);
-  color: var(--text);
+.nav__link:focus-visible { color: var(--fire-gold); background: rgba(242, 198, 109, 0.08); }
+.nav__link:hover .icon { transform: translateY(-1px) scale(1.12); }
+
+/* Animated underline: grows from the left on hover, stays lit on the current section */
+.nav__link::after {
+  content: ""; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--torch-orange), var(--fire-gold));
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform 0.35s var(--ease-out);
+}
+.nav__link:hover::after,
+.nav__link[aria-current]::after { transform: scaleX(1); }
+
+/* Current section: torch orange, a fire glow on the underline, the icon lit */
+.nav__link[aria-current] { color: var(--torch-orange); }
+.nav__link[aria-current]::after { box-shadow: 0 0 10px rgba(232, 139, 53, 0.8); }
+.nav__link[aria-current] .icon { filter: drop-shadow(0 0 5px rgba(232, 139, 53, 0.75)); }
+.fx .nav__link[aria-current] .icon { animation: icon-glow 2.4s ease-in-out infinite alternate; }
+@keyframes icon-glow {
+  from { filter: drop-shadow(0 0 2px rgba(232, 139, 53, 0.45)); }
+  to { filter: drop-shadow(0 0 7px rgba(242, 198, 109, 0.9)); }
 }
 
-.theme-toggle {
-  margin-left: 4px;
-  width: 36px;
-  height: 36px;
-  flex: none;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  font-size: 1rem;
-  display: inline-grid;
-  place-items: center;
-  padding: 0;
+.nav__tools { display: flex; align-items: center; gap: 6px; margin-left: 8px; }
+
+.nav__tool,
+.theme-toggle,
+.nav__menu-btn {
+  display: inline-grid; place-items: center;
+  width: 40px; height: 40px; flex: none; padding: 0;
+  border-radius: 50%; border: 1px solid var(--border-strong);
+  background: transparent; color: var(--sandstone); cursor: pointer;
+}
+.nav__tool[hidden] { display: none; }
+.nav__tool:hover,
+.theme-toggle:hover,
+.nav__menu-btn:hover { color: var(--fire-gold); border-color: var(--fire-gold); box-shadow: var(--glow-gold); }
+.nav__tool[aria-pressed="true"] { color: var(--torch-orange); border-color: var(--torch-orange); }
+#sound-toggle[aria-pressed="true"] .sound__off,
+#sound-toggle:not([aria-pressed="true"]) .sound__on { display: none; }
+
+.nav__menu-btn { display: none; border-radius: var(--radius-sm); }
+.nav__menu-btn[aria-expanded="true"] .nav__menu-open,
+.nav__menu-btn:not([aria-expanded="true"]) .nav__menu-close { display: none; }
+
+/* Mobile: a drop-down menu, but only once fx.js has wired the button (html.nav-js).
+   Without JavaScript the links stay a scrolling strip, exactly as before */
+@media (max-width: 900px) {
+  html.nav-js .nav__menu-btn { display: inline-grid; }
+  html.nav-js .nav__links {
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 2px;
+    padding: 8px var(--gutter) 14px;
+    max-height: calc(100vh - 56px); overflow-y: auto;
+    background: var(--deep-jungle);
+    border-bottom: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    visibility: hidden; opacity: 0; transform: translateY(-8px);
+    transition: opacity 0.22s ease, transform 0.28s var(--ease-out), visibility 0s linear 0.28s;
+  }
+  html.nav-js .nav.is-open .nav__links {
+    visibility: visible; opacity: 1; transform: none; transition-delay: 0s;
+  }
+  html.nav-js .nav__link { padding: 13px 12px; font-size: 0.95rem; }  /* 44px touch target */
+  html.nav-js .nav__link::after { display: none; }
+  html.nav-js .nav__link[aria-current] {
+    background: rgba(232, 139, 53, 0.12); box-shadow: inset 3px 0 0 var(--torch-orange);
+  }
+}
+
+/* Mid widths: drop the wordmark (the torch stays) so seven links fit */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .nav__brand-text { display: none; }
 }
 
 .theme-toggle__moon { display: none; }
@@ -1155,10 +1202,6 @@ h4 {
   .tribe__body {
     grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
   }
-
-  .nav__brand {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1371,31 +1414,6 @@ h4 {
   transform-origin: 0 50%;
   background: linear-gradient(90deg, var(--torch-orange), var(--fire-gold));
   pointer-events: none;
-}
-
-.nav__link {
-  position: relative;
-}
-
-.nav__link::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 3px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--torch-orange);
-  transform: scaleX(0);
-  transition: transform 0.35s var(--ease-out);
-}
-
-.nav__link[aria-current] {
-  color: var(--text);
-}
-
-.nav__link[aria-current]::after {
-  transform: scaleX(1);
 }
 
 .theme-toggle {
@@ -1691,6 +1709,7 @@ html.vt-theme::view-transition-new(root) {
   .chip,
   .stat,
   .nav__link::after,
+  .nav__link .icon,
   .theme-toggle {
     transition: none;
   }
