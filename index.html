@@ -5,16 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Probst's Posse · Survivor 51 Draft</title>
   <meta name="description" content="Live tracker for the Probst's Posse Survivor 51 draft: picks, standings, tribes and boot order.">
-  <meta name="theme-color" content="#0f2a44">
+  <meta name="theme-color" content="#0B100E">
   <meta property="og:title" content="Probst's Posse · Survivor 51 Draft">
   <meta property="og:description" content="Who's still in the game? Live standings for our Survivor 51 draft.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
   <script>
-    // Apply the saved theme before first paint, and switch on entrance
-    // animations only when motion is welcome and the motion script can drive them
+    // Before first paint: apply the saved theme, and decide whether motion is welcome.
+    // "still" = no animation at all (the visitor's device setting, or the footer switch)
     (function (root) {
-      try { var t = localStorage.getItem("theme"); if (t) root.dataset.theme = t; } catch (e) {}
-      if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var still = false;
+      try {
+        var t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") root.dataset.theme = t;
+        still = localStorage.getItem("posse:motion") === "off";
+      } catch (e) {}
+      // Preview link: ?theme=light or ?theme=dark shows that theme without saving it
+      var q = /[?&]theme=(light|dark)(&|$)/.exec(location.search);
+      if (q) root.dataset.theme = q[1];
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) still = true;
+      if (still) { root.classList.add("still"); return; }
+      if (!("IntersectionObserver" in window)) return;
       root.classList.add("fx");
       // Never leave content hidden if fx.js fails to load
       setTimeout(function () { if (!window.PosseFX) root.classList.remove("fx"); }, 4000);
@@ -24,10 +34,32 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="css/global.css?v=dev">
+  <link rel="stylesheet" href="css/council.css?v=dev">
 </head>
 <body>
-  <header class="hero">
+  <header class="hero night" id="top">
     <canvas class="hero__embers" id="embers" aria-hidden="true"></canvas>
+    <svg class="hero__fronds hero__fronds--left" viewBox="0 0 260 220" aria-hidden="true" focusable="false">
+      <g>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(8)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(28) scale(1.15)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(48) scale(1.25)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(68) scale(1.1)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(86) scale(0.9)"/>
+      </g>
+    </svg>
+    <svg class="hero__fronds hero__fronds--right" viewBox="0 0 260 220" aria-hidden="true" focusable="false">
+      <g>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(8)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(28) scale(1.15)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(48) scale(1.25)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(68) scale(1.1)"/>
+        <path d="M0 0C40-14 100-12 150 0C100 12 40 14 0 0Z" transform="rotate(86) scale(0.9)"/>
+      </g>
+    </svg>
+    <svg class="hero__island" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path d="M0 120V96C120 92 180 70 260 62C320 56 350 30 420 26C500 22 540 58 620 66C700 74 760 50 840 44C920 38 980 70 1060 80C1120 88 1170 92 1200 94V120Z"/>
+    </svg>
     <div class="hero__torch" aria-hidden="true">
       <svg viewBox="0 0 120 320" focusable="false">
         <path class="hero__flame hero__flame--outer" d="M60 8 C78 40 98 62 96 92 C94 116 80 132 60 132 C40 132 26 116 24 92 C22 72 36 60 42 40 C46 52 52 58 56 60 C60 44 62 26 60 8 Z"/>
@@ -50,7 +82,7 @@
   </header>
   <div class="buff-stripe" aria-hidden="true"></div>
 
-  <nav class="nav" aria-label="Sections">
+  <nav class="nav night" aria-label="Sections">
     <div class="container nav__inner">
       <a class="nav__brand" href="#top">Probst's <span>Posse</span></a>
       <a class="nav__link" href="#standings">Standings</a>
@@ -59,12 +91,12 @@
       <a class="nav__link" href="#boot-order">Boot Order</a>
       <a class="nav__link" href="#cast">Cast</a>
       <a class="nav__link" href="#rules">Rules</a>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to the day theme"><svg class="icon theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><svg class="icon theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg></button>
     </div>
     <div class="nav__progress" id="nav-progress" aria-hidden="true"></div>
   </nav>
 
-  <main id="top">
+  <main id="main">
     <div id="error"></div>
 
     <section class="section" id="standings">
@@ -162,7 +194,7 @@
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="footer night">
     <div class="container footer__inner">
       <span>Probst's Posse · A fan-made draft tracker. Not affiliated with CBS or Survivor.</span>
       <span id="footer-updated">Statuses sync automatically from <a href="https://en.wikipedia.org/wiki/Survivor_51" rel="noopener">Wikipedia</a>.</span>

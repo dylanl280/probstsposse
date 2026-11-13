@@ -231,7 +231,7 @@
         [esc(sole.shortName), "Sole Survivor"],
         [champion ? esc(champion.player.name) : "Tied", "Draft champion"],
       ] : [
-        [`${count(remaining)}<small style="font-size:.55em;opacity:.7"> / ${cast.length}</small>`, "Castaways left"],
+        [`${count(remaining)}<small class="stat__of"> / ${cast.length}</small>`, "Castaways left"],
         [count(activeTribes), activeTribes === 1 ? "Tribe (merged)" : "Tribes"],
       ]),
       state.live
@@ -543,13 +543,14 @@
   function applyTheme(theme) {
     if (theme) document.documentElement.dataset.theme = theme;
     else delete document.documentElement.dataset.theme;
+    $("theme-toggle").setAttribute("aria-label", theme === "light" ? "Switch to the night theme" : "Switch to the day theme");
   }
 
-  try { applyTheme(localStorage.getItem("theme")); } catch (e) { /* storage unavailable */ }
+  // The head script already applied the saved theme (or the ?theme= preview); this only sets the label
+  applyTheme(document.documentElement.dataset.theme);
 
   $("theme-toggle").addEventListener("click", (e) => {
-    const current = document.documentElement.dataset.theme
-      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const current = document.documentElement.dataset.theme === "light" ? "light" : "dark";
     const next = current === "dark" ? "light" : "dark";
     try { localStorage.setItem("theme", next); } catch (err) { /* storage unavailable */ }
     const apply = () => applyTheme(next);

@@ -6,7 +6,7 @@
   "use strict";
 
   const root = document.documentElement;
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduced = root.classList.contains("still") || matchMedia("(prefers-reduced-motion: reduce)").matches;
   const FX = { reduced };
   window.PosseFX = FX;
 
@@ -43,10 +43,10 @@
     sprite.width = sprite.height = 64;
     const sctx = sprite.getContext("2d");
     const glow = sctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    glow.addColorStop(0, "rgba(255, 244, 200, 1)");
-    glow.addColorStop(0.18, "rgba(255, 196, 80, 0.95)");
-    glow.addColorStop(0.45, "rgba(232, 100, 44, 0.45)");
-    glow.addColorStop(1, "rgba(232, 100, 44, 0)");
+    glow.addColorStop(0, "rgba(255, 244, 214, 1)");
+    glow.addColorStop(0.18, "rgba(242, 198, 109, 0.95)");
+    glow.addColorStop(0.45, "rgba(232, 139, 53, 0.45)");
+    glow.addColorStop(1, "rgba(232, 139, 53, 0)");
     sctx.fillStyle = glow;
     sctx.fillRect(0, 0, 64, 64);
 
@@ -224,7 +224,7 @@
     canvas.height = Math.round(h * ratio);
     ctx.scale(ratio, ratio);
 
-    const colors = ["#f6c623", "#8fd6e8", "#5a2a82", "#b5d334", "#e5325f", "#1d5fc2", "#e8642c"];
+    const colors = ["#f6c623", "#8fd6e8", "#5a2a82", "#b5d334", "#e5325f", "#1d5fc2", "#E88B35", "#F2C66D"];
     const pieces = [];
     for (let i = 0; i < 180; i++) {
       // Two cannons, one in each bottom corner, firing up and inward

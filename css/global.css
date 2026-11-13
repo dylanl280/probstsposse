@@ -6,7 +6,21 @@
 
 /* ---------- Design tokens ---------- */
 :root {
-  /* Buff palette */
+  /* Survivor palette */
+  --night: #0B100E;         /* deepest: hero base, Boot Order band, footer */
+  --charcoal: #101614;      /* main background */
+  --deep-jungle: #17251E;   /* navigation and panels */
+  --forest: #294638;        /* cards */
+  --forest-inset: #1D3027;  /* wells inside cards: table head, mini picks */
+  --torch-orange: #E88B35;  /* highlights and interactive elements */
+  --fire-gold: #F2C66D;     /* accents; small accent text on cards */
+  --sandstone: #D8C6A0;     /* secondary text and borders */
+  --blood-red: #A52A2A;     /* eliminations: fills, borders, glows. Never text on dark */
+  --ember-red: #F49A8C;     /* elimination text on dark surfaces */
+  --ivory: #F5F0E6;         /* primary text */
+  --leaf: #A6E3B5;          /* "still in the game" text on dark */
+
+  /* Buff palette: real Survivor 51 tribe colours */
   --toka-yellow: #f6c623;
   --toka-yellow-deep: #d9a800;
   --toka-sky: #8fd6e8;
@@ -17,33 +31,15 @@
   --dina-blush: #f48aa8;
   --tovuto-blue: #1d5fc2;
   --tovuto-cyan: #4cc3ea;
-  --ocean-navy: #0f2a44;
-  --torch-orange: #e8642c;
-  --spoken-red: #c62828;
-  --jungle-green: #2e7d32;
   --merge-teal: #04a9e5;
 
-  /* Semantic colors (light) */
-  --bg: #f6f3ec;
-  --surface: #ffffff;
-  --surface-2: #faf8f3;
-  --text: #13202e;
-  --text-muted: #5b6573;
-  --border: #e4ded2;
-  --shadow: 0 1px 2px rgba(15, 42, 68, 0.06), 0 4px 16px rgba(15, 42, 68, 0.08);
-  --shadow-lg: 0 2px 4px rgba(15, 42, 68, 0.08), 0 12px 32px rgba(15, 42, 68, 0.14);
-  --status-active: var(--jungle-green);
-  --status-active-bg: #e8f5e9;
-  --status-out: var(--spoken-red);
-  --status-out-bg: #fdecea;
-  --status-warn: #b45309;
-  --status-warn-bg: #fff4e5;
-  --status-gold: #8a6500;
-  --status-gold-bg: #fff6d6;
-
-  /* Type */
+  /* Type + scale */
   --font-display: "Oswald", "Arial Narrow", Impact, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fs-label: 0.72rem;                       /* uppercase labels */
+  --fs-nav: 0.82rem;
+  --fs-stat: clamp(2.1rem, 5vw, 3.1rem);     /* big stat numerals */
+  --track-label: 0.14em;                     /* letter-spacing for labels and nav */
 
   /* Shape + spacing */
   --radius-sm: 6px;
@@ -51,50 +47,78 @@
   --radius-lg: 18px;
   --gutter: clamp(16px, 4vw, 40px);
   --max-width: 1200px;
-
-  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0b1622;
-    --surface: #13212f;
-    --surface-2: #182a3b;
-    --text: #eef2f6;
-    --text-muted: #9aa8b7;
-    --border: #22384d;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
-    --status-active: #66bb6a;
-    --status-active-bg: rgba(102, 187, 106, 0.14);
-    --status-out: #ef5350;
-    --status-out-bg: rgba(239, 83, 80, 0.14);
-    --status-warn: #ffa726;
-    --status-warn-bg: rgba(255, 167, 38, 0.14);
-    --status-gold: var(--toka-yellow);
-    --status-gold-bg: rgba(246, 198, 35, 0.14);
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg: #0b1622;
-  --surface: #13212f;
-  --surface-2: #182a3b;
-  --text: #eef2f6;
-  --text-muted: #9aa8b7;
-  --border: #22384d;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
-  --status-active: #66bb6a;
-  --status-active-bg: rgba(102, 187, 106, 0.14);
-  --status-out: #ef5350;
-  --status-out-bg: rgba(239, 83, 80, 0.14);
-  --status-warn: #ffa726;
-  --status-warn-bg: rgba(255, 167, 38, 0.14);
-  --status-gold: var(--toka-yellow);
-  --status-gold-bg: rgba(246, 198, 35, 0.14);
+/* Tribal Council (default). `.night` re-applies it inside the Day theme, for the
+   surfaces that stay dark in both themes: hero, nav, Boot Order band, footer, ceremony */
+:root,
+.night {
+  --bg: var(--charcoal);
+  --panel: var(--deep-jungle);
+  --surface: var(--forest);
+  --surface-2: var(--forest-inset);
+  --text: var(--ivory);
+  --text-muted: var(--sandstone);
+  --accent: var(--torch-orange);       /* icons, borders, large text; text on --bg/--panel */
+  --accent-text: var(--fire-gold);     /* small accent text on cards */
+  --gold: var(--fire-gold);
+  --border: rgba(216, 198, 160, 0.16);
+  --border-strong: rgba(216, 198, 160, 0.5);   /* control outlines: chips, toggles */
+  --ring: var(--fire-gold);                    /* focus ring and "selected" outline */
+  --hairline: rgba(245, 240, 230, 0.35);       /* ring around tribe-coloured borders */
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
+  --glow-fire: 0 0 0 1px rgba(232, 139, 53, 0.55), 0 0 18px rgba(232, 139, 53, 0.35);
+  --glow-gold: 0 0 0 1px rgba(242, 198, 109, 0.6), 0 0 16px rgba(242, 198, 109, 0.28);
+  --status-active: var(--leaf);
+  --status-active-bg: rgba(166, 227, 181, 0.14);
+  --status-out: var(--ember-red);              /* red TEXT */
+  --status-out-bg: rgba(165, 42, 42, 0.28);    /* red tint behind red text */
+  --status-gold: var(--fire-gold);
+  --status-gold-bg: rgba(242, 198, 109, 0.12); /* champion row tint */
+  --rank-1: var(--fire-gold);
+  --rank-2: #C4CCD2;
+  --rank-3: #E0A070;
+  --torch-dead: #A9B0B6;                       /* snuffed torch grey */
+  --grain-opacity: 0.05;
   color-scheme: dark;
+}
+
+.night {
+  color: var(--text);
+}
+
+/* Day at camp: sandstone and parchment. Only the toggle turns this on */
+:root[data-theme="light"] {
+  --bg: #EADFC8;
+  --panel: #E2D5B8;
+  --surface: #F7F1E3;
+  --surface-2: #EFE5CF;
+  --text: #1F2A22;
+  --text-muted: #5A5240;
+  --accent: #9A470C;
+  --accent-text: #9A470C;
+  --gold: #7A580C;
+  --border: rgba(74, 60, 30, 0.2);
+  --border-strong: rgba(74, 60, 30, 0.65);
+  --ring: #9A470C;
+  --hairline: rgba(31, 42, 34, 0.25);
+  --shadow: 0 1px 2px rgba(74, 60, 30, 0.1), 0 4px 16px rgba(74, 60, 30, 0.12);
+  --shadow-lg: 0 2px 4px rgba(74, 60, 30, 0.12), 0 12px 32px rgba(74, 60, 30, 0.2);
+  --glow-fire: 0 0 0 1px rgba(154, 71, 12, 0.5), 0 0 14px rgba(232, 139, 53, 0.3);
+  --glow-gold: 0 0 0 1px rgba(122, 88, 12, 0.5), 0 0 14px rgba(242, 198, 109, 0.45);
+  --status-active: #2E6B3E;
+  --status-active-bg: rgba(46, 107, 62, 0.12);
+  --status-out: var(--blood-red);
+  --status-out-bg: rgba(165, 42, 42, 0.1);
+  --status-gold: #7A580C;
+  --status-gold-bg: rgba(242, 198, 109, 0.35);
+  --rank-1: #7A580C;
+  --rank-2: #5E6A74;
+  --rank-3: #8A4B1F;
+  --torch-dead: #6F7880;
+  --grain-opacity: 0.07;
+  color-scheme: light;
 }
 
 /* ---------- Base ---------- */
@@ -126,6 +150,11 @@ img {
 
 a {
   color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 h1,
@@ -173,11 +202,12 @@ h4 {
 .hero {
   position: relative;
   overflow: hidden;
-  color: #fff;
+  color: var(--ivory);
   background:
-    radial-gradient(1200px 400px at 85% -10%, rgba(232, 100, 44, 0.35), transparent 60%),
-    radial-gradient(900px 500px at -10% 120%, rgba(90, 42, 130, 0.65), transparent 60%),
-    linear-gradient(160deg, #0f2a44 0%, #123a5a 55%, #0b2236 100%);
+    var(--tex-grain-soft, none),
+    radial-gradient(1100px 420px at 84% 108%, rgba(232, 139, 53, 0.30), transparent 62%),
+    radial-gradient(900px 520px at -10% -20%, rgba(41, 70, 56, 0.75), transparent 60%),
+    linear-gradient(180deg, #0B100E 0%, #13201A 55%, #101614 100%);
 }
 
 .hero::after {
@@ -211,7 +241,7 @@ h4 {
   font-size: 0.95rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--toka-yellow);
+  color: var(--fire-gold);
 }
 
 .hero__eyebrow::before {
@@ -232,7 +262,7 @@ h4 {
 .hero__subtitle {
   margin: 12px 0 0;
   max-width: 620px;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--sandstone);
   font-size: 1.05rem;
 }
 
@@ -244,8 +274,8 @@ h4 {
 }
 
 .stat {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(245, 240, 230, 0.06);
+  border: 1px solid rgba(216, 198, 160, 0.22);
   border-radius: var(--radius);
   padding: 14px 16px;
   backdrop-filter: blur(4px);
@@ -253,17 +283,36 @@ h4 {
 
 .stat__value {
   font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 600;
+  font-size: var(--fs-stat);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
   line-height: 1;
+}
+
+.stat__of {
+  font-size: 0.5em;
+  font-weight: 500;
+  color: var(--sandstone);
 }
 
 .stat__label {
   margin-top: 6px;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--sandstone);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ---------- Navigation ---------- */
@@ -332,7 +381,14 @@ h4 {
   color: var(--text);
   cursor: pointer;
   font-size: 1rem;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
 }
+
+.theme-toggle__moon { display: none; }
+:root[data-theme="light"] .theme-toggle__sun { display: none; }
+:root[data-theme="light"] .theme-toggle__moon { display: block; }
 
 /* ---------- Sections ---------- */
 .section {
@@ -354,6 +410,7 @@ h4 {
 
 .section__title {
   font-size: clamp(1.7rem, 4vw, 2.4rem);
+  letter-spacing: 0.04em;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -364,7 +421,7 @@ h4 {
   width: 6px;
   height: 0.9em;
   border-radius: 3px;
-  background: linear-gradient(180deg, var(--torch-orange), var(--toka-yellow));
+  background: linear-gradient(180deg, var(--torch-orange), var(--fire-gold));
 }
 
 .section__lede {
@@ -404,9 +461,9 @@ h4 {
 }
 
 .status--active { color: var(--status-active); background: var(--status-active-bg); }
-.status--out { color: var(--status-out); background: var(--status-out-bg); }
-.status--warn { color: var(--status-warn); background: var(--status-warn-bg); }
-.status--gold { color: var(--status-gold); background: var(--status-gold-bg); }
+.status--out { color: var(--ivory); background: var(--blood-red); }
+.status--warn { color: var(--charcoal); background: var(--torch-orange); }
+.status--gold { color: var(--charcoal); background: var(--fire-gold); }
 
 /* ---------- Castaway (photo + name + status) ---------- */
 .castaway {
@@ -427,6 +484,7 @@ h4 {
   overflow: hidden;
   background: var(--surface-2);
   border: 3px solid var(--tribe-color);
+  box-shadow: 0 0 0 1px var(--hairline);
 }
 
 .castaway__photo img {
@@ -483,7 +541,7 @@ h4 {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(198, 40, 40, 0.55));
+  background: linear-gradient(180deg, transparent 45%, rgba(165, 42, 42, 0.6));
 }
 
 .castaway.is-out .castaway__name {
@@ -500,13 +558,13 @@ h4 {
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--ivory);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .castaway.is-winner .castaway__photo {
-  border-color: var(--toka-yellow);
-  box-shadow: 0 0 0 4px rgba(246, 198, 35, 0.35);
+  border-color: var(--fire-gold);
+  box-shadow: 0 0 0 1px var(--hairline), 0 0 0 4px rgba(242, 198, 109, 0.4);
 }
 
 .tribe-tag {
@@ -519,6 +577,7 @@ h4 {
   border-radius: 4px;
   background: var(--tribe-color, var(--merge-teal));
   color: var(--tribe-ink, #fff);
+  box-shadow: 0 0 0 1px var(--hairline);
 }
 
 /* ---------- Standings table ---------- */
@@ -533,9 +592,9 @@ h4 {
 
 .standings__table th {
   text-align: left;
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--text-muted);
   background: var(--surface-2);
@@ -555,15 +614,16 @@ h4 {
 
 .rank {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   width: 64px;
   color: var(--text-muted);
 }
 
-.rank--1 { color: var(--toka-yellow-deep); }
-.rank--2 { color: #8a96a3; }
-.rank--3 { color: #b0703c; }
+.rank--1 { color: var(--rank-1); }
+.rank--2 { color: var(--rank-2); }
+.rank--3 { color: var(--rank-3); }
 
 .player-name {
   font-weight: 700;
@@ -582,7 +642,7 @@ h4 {
   border-radius: 50%;
   object-fit: cover;
   object-position: center 30%;
-  box-shadow: 0 0 0 2px var(--tribe-color, var(--merge-teal));
+  box-shadow: 0 0 0 2px var(--tribe-color, var(--merge-teal)), 0 0 0 3px var(--hairline);
 }
 
 .mini-pick.is-out img {
@@ -616,7 +676,7 @@ h4 {
 .torch__wrap { stroke: var(--torch-wrap); stroke-width: 1.2; fill: none; }
 .torch__pole { fill: var(--torch-pole); }
 .torch__flame-outer { fill: var(--torch-orange); }
-.torch__flame-inner { fill: var(--toka-yellow); }
+.torch__flame-inner { fill: var(--fire-gold); }
 
 .torch__flame {
   transform-box: fill-box;
@@ -634,15 +694,14 @@ h4 {
 }
 
 .torch.is-snuffed {
-  --torch-head: #8d959e;
+  --torch-head: var(--torch-dead);
   --torch-wrap: #6b737c;
-  --torch-pole: #8d959e;
-  opacity: 0.75;
+  --torch-pole: var(--torch-dead);
 }
 
 .torch__smoke {
   fill: none;
-  stroke: #7b858f;
+  stroke: var(--torch-dead);
   stroke-width: 1.4;
   stroke-linecap: round;
   opacity: 0.8;
@@ -673,8 +732,9 @@ h4 {
   justify-content: space-between;
   gap: 12px;
   padding: 16px 20px;
-  background: linear-gradient(120deg, var(--ocean-navy), #17426a);
-  color: #fff;
+  background: var(--tex-wood, none), linear-gradient(180deg, #5A3D25, #3E2A19);
+  color: var(--ivory);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
 }
 
 .player-card__name {
@@ -686,7 +746,8 @@ h4 {
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.12);
+  font-variant-numeric: tabular-nums;
+  background: rgba(245, 240, 230, 0.14);
   border-radius: 999px;
   padding: 4px 10px;
   white-space: nowrap;
@@ -836,7 +897,8 @@ h4 {
 .tribe__head {
   position: relative;
   padding: 20px 22px;
-  background: var(--tribe-color);
+  background-color: var(--tribe-color);
+  background-image: var(--tex-wood, none);
   color: var(--tribe-ink, #fff);
   overflow: hidden;
 }
@@ -901,8 +963,9 @@ h4 {
 
 .boot__num {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: var(--status-out);
   text-align: center;
 }
@@ -942,7 +1005,7 @@ h4 {
 }
 
 .chip {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   background: var(--surface);
   color: var(--text);
   font: inherit;
@@ -954,9 +1017,10 @@ h4 {
 }
 
 .chip[aria-pressed="true"] {
-  background: var(--ocean-navy);
-  border-color: var(--ocean-navy);
-  color: #fff;
+  background: var(--torch-orange);
+  border-color: var(--torch-orange);
+  color: var(--charcoal);
+  box-shadow: var(--glow-fire);
 }
 
 .cast-grid {
@@ -1008,8 +1072,9 @@ h4 {
 
 /* ---------- Footer ---------- */
 .footer {
-  background: var(--ocean-navy);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--night);
+  border-top: 1px solid var(--border);
+  color: var(--sandstone);
   font-size: 0.85rem;
 }
 
@@ -1023,7 +1088,7 @@ h4 {
 }
 
 .footer a {
-  color: var(--toka-sky);
+  color: var(--fire-gold);
 }
 
 /* ---------- Loading / error ---------- */
@@ -1151,7 +1216,7 @@ h4 {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(720px 340px at 84% 108%, rgba(232, 100, 44, 0.42), transparent 70%);
+  background: radial-gradient(720px 340px at 84% 108%, rgba(232, 139, 53, 0.38), transparent 70%);
   animation: heat 5s ease-in-out infinite alternate;
   pointer-events: none;
 }
@@ -1196,7 +1261,7 @@ h4 {
   width: 300%;
   aspect-ratio: 1;
   translate: -50% -50%;
-  background: radial-gradient(closest-side, rgba(246, 198, 35, 0.34), rgba(232, 100, 44, 0.16) 45%, transparent 72%);
+  background: radial-gradient(closest-side, rgba(242, 198, 109, 0.34), rgba(232, 139, 53, 0.16) 45%, transparent 72%);
   animation: glow 2.4s ease-in-out infinite alternate;
 }
 
@@ -1238,12 +1303,12 @@ h4 {
 }
 
 .hero__word--fire {
-  color: var(--toka-yellow);
+  color: var(--fire-gold);
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .hero__word--fire {
-    background: linear-gradient(100deg, #f6c623 0%, #ffe9a3 16%, #f6a023 34%, #e8642c 50%, #f6a023 66%, #ffe9a3 84%, #f6c623 100%);
+    background: linear-gradient(100deg, #F2C66D 0%, #FFE9B0 16%, #F2A93B 34%, #E88B35 50%, #F2A93B 66%, #FFE9B0 84%, #F2C66D 100%);
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -1304,7 +1369,7 @@ h4 {
   height: 3px;
   transform: scaleX(var(--progress, 0));
   transform-origin: 0 50%;
-  background: linear-gradient(90deg, var(--torch-orange), var(--toka-yellow));
+  background: linear-gradient(90deg, var(--torch-orange), var(--fire-gold));
   pointer-events: none;
 }
 
@@ -1486,7 +1551,7 @@ h4 {
     inset: 0;
     z-index: 2;
     border-radius: inherit;
-    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(232, 100, 44, 0.13), transparent 62%);
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(242, 198, 109, 0.12), transparent 62%);
     opacity: 0;
     transition: opacity 0.35s ease;
     pointer-events: none;
@@ -1501,8 +1566,8 @@ h4 {
   }
 
   .stat:hover {
-    background: rgba(255, 255, 255, 0.11);
-    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(245, 240, 230, 0.1);
+    border-color: rgba(242, 198, 109, 0.55);
     transform: translateY(-2px);
   }
 }
@@ -1513,13 +1578,13 @@ h4 {
 }
 
 .player-card.is-champion {
-  border-color: var(--toka-yellow);
-  box-shadow: 0 0 0 3px rgba(246, 198, 35, 0.35), var(--shadow-lg);
+  border-color: var(--fire-gold);
+  box-shadow: 0 0 0 3px rgba(242, 198, 109, 0.4), var(--shadow-lg);
 }
 
 .player-card.is-champion .player-card__head {
   color: #1d1a0a;
-  background: linear-gradient(100deg, #d9a800 0%, #f6c623 22%, #fff0b3 50%, #f6c623 78%, #d9a800 100%);
+  background: linear-gradient(100deg, #C9973A 0%, #F2C66D 22%, #FFEFC2 50%, #F2C66D 78%, #C9973A 100%);
   background-size: 200% 100%;
   animation: molten 6s linear infinite;
 }
@@ -1561,6 +1626,43 @@ html.vt-theme::view-transition-new(root) {
 }
 
 @media print {
+  /* Paper is white: dark ink for every surface, whatever theme is on screen.
+     Redefining the palette also fixes the rules that use it directly (hero, nav, pills) */
+  :root {
+    --ivory: #1F2A22;
+    --sandstone: #5A5240;
+    --fire-gold: #7A580C;
+    --torch-orange: #9A470C;
+    --ember-red: #A52A2A;
+    --leaf: #2E6B3E;
+  }
+  :root,
+  .night {
+    --bg: #fff;
+    --panel: #fff;
+    --surface: #fff;
+    --surface-2: #F3F0E8;
+    --border: rgba(0, 0, 0, 0.2);
+    color-scheme: light;
+  }
+  /* !important: council.css loads later and would otherwise win */
+  .hero,
+  .footer,
+  .section--council,
+  .player-card__head {
+    background: none !important;
+  }
+  .nav,
+  body::before,
+  .hero__embers,
+  .hero__fronds,
+  .hero__island,
+  .hero__torch,
+  .council-embers,
+  .smoke-veil,
+  .footer__switch {
+    display: none !important;
+  }
   .fx .reveal {
     opacity: 1;
   }
@@ -1598,4 +1700,37 @@ html.vt-theme::view-transition-new(root) {
   ::view-transition-new(*) {
     animation: none !important;
   }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0s !important;
+  }
+}
+
+/* One switch for "no motion": the head script adds .still for reduced-motion devices
+   and for the footer switch. Every animation and transition ends instantly, in its
+   final state, so new animations are covered without being listed here */
+html.still *,
+html.still *::before,
+html.still *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0s !important;
+}
+
+html.still {
+  scroll-behavior: auto;
+}
+
+html.still .hero__embers,
+html.still .council-embers,
+html.still .smoke-veil {
+  display: none;
 }

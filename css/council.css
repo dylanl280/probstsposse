@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Tribal Council layer: textures, smoke, the Boot Order band and the
+   torch-snuffing ceremony. Loaded after global.css.
+   ========================================================================== */
+
+:root {
+  /* One small SVG noise tile. "soft" is for layered backgrounds, where the layer's
+     opacity cannot be set separately */
+  --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --tex-grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0 0.12 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --tex-wood: repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 11px);
+}
+
+/* Film grain over the whole page: static, one layer, never animated */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--tex-grain);
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+}
+
+/* Rules cards = "tree mail": parchment, an always-light surface in both themes */
+.rule {
+  --text: #2A2118;
+  --text-muted: #4A3620;
+  color: var(--text);
+  background:
+    var(--tex-grain-soft),
+    radial-gradient(120% 100% at 50% 35%, #EFE2C2 0%, #E2D0A6 68%, #C9B283 100%);
+  border: 1px solid rgba(74, 60, 30, 0.45);
+  box-shadow: var(--shadow), inset 0 0 26px rgba(101, 67, 33, 0.28);
+}
+
+.rule__icon {            /* a wax seal holding the emoji */
+  border-radius: 50%;
+  background: var(--blood-red);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.22), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* global.css swaps the shadow on hover, which would drop the parchment's dark edge */
+@media (hover: hover) and (pointer: fine) {
+  .rule:hover { box-shadow: var(--shadow-lg), inset 0 0 26px rgba(101, 67, 33, 0.28); }
+}
+
+/* ---------- Hero scenery: palm fronds and an island horizon ---------- */
+.hero__fronds {
+  position: absolute;
+  top: 0;
+  width: clamp(140px, 22vw, 300px);
+  overflow: visible;
+  fill: #0A120E;
+  opacity: 0.9;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.hero__fronds--left { left: 0; }
+
+.hero__fronds--right {
+  right: 0;
+  fill: #16261D;
+  transform: scaleX(-1);
+  transform-origin: 100% 0;
+}
+
+.fx .hero__fronds g {
+  animation: frond-sway 9s ease-in-out infinite alternate;
+  transform-origin: 0 0;
+}
+
+@keyframes frond-sway {
+  from { transform: rotate(-1.2deg); }
+  to { transform: rotate(1.4deg); }
+}
+
+.hero__island {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  width: 100%;
+  height: clamp(36px, 7vw, 88px);
+  fill: var(--night);
+  opacity: 0.9;
+  pointer-events: none;
+}
