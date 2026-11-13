@@ -138,7 +138,8 @@ def status_from_finish(finish):
         return "medevac"
     if re.search(r"\bquit\b", f):
         return "quit"
-    if "jury" in f:
+    # "Withdrew from jury" (e.g. Brady) was voted out but is not on the jury
+    if "jury" in f and "withdrew" not in f:
         return "jury"
     return "voted_out"
 
