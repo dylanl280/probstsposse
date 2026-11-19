@@ -4,7 +4,7 @@
   "location": "Mamanuca Islands, Fiji",
   "premiere": "2026-09-23",
   "episodesAired": 8,
-  "lastUpdated": "2026-11-14T11:36:00+00:00",
+  "lastUpdated": "2026-11-19T02:43:08+00:00",
   "source": "https://en.wikipedia.org/wiki/Survivor_51",
   "tribes": {
     "savu": {
@@ -277,13 +277,13 @@
       "occupation": "Farmer",
       "photo": "images/castaways/lewis.jpg",
       "wikiLastName": "Kelly",
-      "originalTribe": "toka",
-      "tribe": "tovuto",
-      "status": "active",
-      "finish": null,
-      "day": null,
+      "originalTribe": "tovuto",
+      "tribe": "dina",
+      "status": "jury",
+      "finish": "Eliminated 3rd jury member",
+      "day": 17,
       "episodeOut": null,
-      "bootOrder": null,
+      "bootOrder": 12,
       "manualOverride": false
     },
     {
