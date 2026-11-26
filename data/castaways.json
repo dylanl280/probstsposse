@@ -4,7 +4,7 @@
   "location": "Mamanuca Islands, Fiji",
   "premiere": "2026-09-23",
   "episodesAired": 10,
-  "lastUpdated": "2026-11-26T02:33:02+00:00",
+  "lastUpdated": "2026-11-26T02:38:06+00:00",
   "source": "https://en.wikipedia.org/wiki/Survivor_51",
   "tribes": {
     "savu": {
@@ -152,12 +152,12 @@
       "photo": "images/castaways/carter.jpg",
       "wikiLastName": "Krull",
       "originalTribe": "savu",
-      "tribe": "toka",
-      "status": "jury",
-      "finish": "12th voted out 5th jury member",
-      "day": 19,
-      "episodeOut": 10,
-      "bootOrder": 14,
+      "tribe": "tovuto",
+      "status": "active",
+      "finish": null,
+      "day": null,
+      "episodeOut": null,
+      "bootOrder": null,
       "manualOverride": false
     },
     {
@@ -282,7 +282,7 @@
       "status": "jury",
       "finish": "Eliminated 3rd jury member",
       "day": 17,
-      "episodeOut": 9,
+      "episodeOut": null,
       "bootOrder": 12,
       "manualOverride": false
     },
@@ -318,7 +318,7 @@
       "status": "jury",
       "finish": "11th voted out 4th jury member",
       "day": 18,
-      "episodeOut": 10,
+      "episodeOut": null,
       "bootOrder": 13,
       "manualOverride": false
     },
